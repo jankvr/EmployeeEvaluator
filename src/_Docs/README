@@ -1,0 +1,9 @@
+Pro zmenu connection stringu:
+
+    1. Otevrit hibernate.cfg.xml
+
+    2. Upravit udaje pod poznamkou "druhy connection string"
+
+Pro vyvijeni:
+
+    1. Nainstalovat lokalni MySQL 5 server

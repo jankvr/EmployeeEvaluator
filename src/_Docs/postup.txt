@@ -1,0 +1,11 @@
+1. Vytvoren konceptualni model, ze ktereho byl vygenerovan fyzicky model. Pote doslo vytvoreni serie SQL prikazu pro vytvoreni databaze. (crebas.sql)
+
+2. Na mistni (localhost) databazi nahrana struktura databaze (bez dat).
+
+3. Vytvoren projekt.
+
+4. Vytvorena struktura v projektu.
+
+5. Vygenerovan model na zaklade databaze (database-first pristup).
+
+6. Vytvoren EmployeeRepository + ukazka pouziti.
