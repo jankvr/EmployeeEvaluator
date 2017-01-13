@@ -17,8 +17,8 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 
 /**
- * POTREBA REFAKTOROVAT KOMENTARE, ATD.
- * @author User
+ * Trida fungujici jako repozitar pro otazky. Prikazy jsou formovany ve stylu "QBE".
+ * @author Jan Kovar
  */
 public class CategoryRepository {
     private final Session session;
@@ -34,8 +34,8 @@ public class CategoryRepository {
     
     
     /**
-     * Vraci vsechny zamestnance z databaze serazenych podle id.
-     * @return seznam vsech zamestnancu
+     * Vraci vsechny otazky z databaze serazenych podle id.
+     * @return seznam vsech otazek
      */
     public List<Category> getAllCategories() {
         session.beginTransaction();
@@ -48,12 +48,12 @@ public class CategoryRepository {
     }
     
     /**
-     * Vyhledavani zamestnancu na zaklade danych parametru.
-     * Logika je nasledujici: prozkouma se zamestnanec predany v parametru a vyhleda se v databazi pomoci poli jinych, nez je primarni klic.
+     * Vyhledavani otazek na zaklade danych parametru.
+     * Logika je nasledujici: prozkouma se otazka predana v parametru a vyhleda se v databazi pomoci poli jinych, nez je primarni klic.
      * Pokud je zadan i primarni klic, vyhledava se primarne podle nej.
      * 
      * @param category
-     * @return seznam relevantnich zamestnancu
+     * @return seznam relevantnich otazek
      */
     public List<Category> getCategoriesByParameters(Category category) {
         session.beginTransaction();
@@ -79,9 +79,9 @@ public class CategoryRepository {
     }
     
     /**
-     * Upravuje zamestnance.
+     * Upravuje otazku.
      * 
-     * @param category upravovany zamestnanec
+     * @param category upravovana otazka
      * @return true, pokud vse skonci v poradku; false v opacnem pripade
      */
     public boolean edit(Category category) {
@@ -103,9 +103,9 @@ public class CategoryRepository {
     }
 
     /**
-     * Vytvari zamestnance.
+     * Vytvari otazku.
      * 
-     * @param category pridavany zamestnanec
+     * @param category pridavana otazka
      * @return true, pokud vse skonci v poradku; false v opacnem pripade
      */
     public boolean create(Category category) {
@@ -127,9 +127,9 @@ public class CategoryRepository {
     }
 
     /**
-     * Maze zamestnance.
+     * Maze otazku.
      * 
-     * @param id id mazaneho zamestnance
+     * @param id id mazane otazky
      * @return true, pokud vse skonci v poradku; false v opacnem pripade
      */
     public boolean delete(int id) {
@@ -152,7 +152,7 @@ public class CategoryRepository {
     }
     
     /**
-     * Metoda nachazi volne id pro zamestnance.
+     * Metoda nachazi volne id pro Category.
      * 
      * @return volne id
      */
@@ -193,10 +193,10 @@ public class CategoryRepository {
     }
     
     /**
-     * Pomocna metoda, ktera validuje zamestnance. 
-     * Kontroluje neprazdnost udaju zamestnance, pokud je jeden prvek prazdny, vrati se false.
+     * Pomocna metoda, ktera validuje category. 
+     * Kontroluje neprazdnost udaju category, pokud je jeden prvek prazdny, vrati se false.
      * 
-     * @param category zamestnanec
+     * @param category otazka
      * @return true, pokud je validni; jinak false
      */
     private boolean validateCategory(Category category) {
