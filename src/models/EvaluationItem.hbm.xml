@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 13.1.2017 16:38:33 by Hibernate Tools 4.3.1 -->
+<hibernate-mapping>
+    <class name="models.EvaluationItem" table="EvaluationItem" catalog="xkovj41" optimistic-lock="version">
+        <id name="idEvaluationItem" type="int">
+            <column name="IdEvaluationItem" />
+            <generator class="assigned" />
+        </id>
+        <many-to-one name="category" class="models.Category" fetch="select">
+            <column name="IdCategory" not-null="true" />
+        </many-to-one>
+        <many-to-one name="evaluation" class="models.Evaluation" fetch="select">
+            <column name="IdEvaluation" not-null="true" />
+        </many-to-one>
+        <property name="score" type="int">
+            <column name="Score" not-null="true" />
+        </property>
+        <property name="commentary" type="string">
+            <column name="Commentary" length="4096" />
+        </property>
+    </class>
+</hibernate-mapping>
