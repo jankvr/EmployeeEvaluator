@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
-<!-- Generated 3.1.2017 19:50:21 by Hibernate Tools 4.3.1 -->
+<!-- Generated 13.1.2017 16:33:40 by Hibernate Tools 4.3.1 -->
 <hibernate-mapping>
-    <class name="models.Category" table="category" catalog="employeeevaluator" optimistic-lock="version">
+    <class name="models.Category" table="Category" catalog="xkovj41" optimistic-lock="version">
         <id name="idCategory" type="int">
             <column name="IdCategory" />
             <generator class="assigned" />
@@ -14,11 +14,11 @@
         <property name="coefficient" type="int">
             <column name="Coefficient" not-null="true" />
         </property>
-        <set name="evaluationitems" table="evaluationitem" inverse="true" lazy="true" fetch="select">
+        <set name="evaluationItems" table="EvaluationItem" inverse="true" lazy="true" fetch="select">
             <key>
                 <column name="IdCategory" not-null="true" />
             </key>
-            <one-to-many class="models.Evaluationitem" />
+            <one-to-many class="models.EvaluationItem" />
         </set>
     </class>
 </hibernate-mapping>

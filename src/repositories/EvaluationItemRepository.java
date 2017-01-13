@@ -7,7 +7,7 @@ package repositories;
 
 import java.util.ArrayList;
 import java.util.List;
-import models.Evaluationitem;
+import models.EvaluationItem;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -37,11 +37,11 @@ public class EvaluationItemRepository {
      * Vraci vsechny otazky v pohovoru z databaze serazenych podle id.
      * @return seznam vsech otazek v pohovoru
      */
-    public List<Evaluationitem> getAllEvaluationItems() {
+    public List<EvaluationItem> getAllEvaluationItems() {
         session.beginTransaction();
 
-        Criteria criteria = session.createCriteria(Evaluationitem.class).addOrder(Order.asc("idEvaluationItem"));
-        List<Evaluationitem> list = criteria.list();
+        Criteria criteria = session.createCriteria(EvaluationItem.class).addOrder(Order.asc("idEvaluationItem"));
+        List<EvaluationItem> list = criteria.list();
         
         session.getTransaction().commit();
         return list;
@@ -55,20 +55,20 @@ public class EvaluationItemRepository {
      * @param evaluationItem
      * @return seznam relevantnich otazek v pohovoru
      */
-    public List<Evaluationitem> getEvaluationByParameter(Evaluationitem evaluationItem) {
+    public List<EvaluationItem> getEvaluationByParameter(EvaluationItem evaluationItem) {
         session.beginTransaction();
 
         Example example;
-        List<Evaluationitem> list = new ArrayList<>();
+        List<EvaluationItem> list = new ArrayList<>();
         
         //vyhledavani podle parametru
         if (evaluationItem.getIdEvaluationItem()<= 0) {
             example = Example.create(evaluationItem).enableLike();
-            Criteria criteria = session.createCriteria(Evaluationitem.class).add(example);
+            Criteria criteria = session.createCriteria(EvaluationItem.class).add(example);
             list = criteria.list();
         }
         else { //vyhledavani podle ids
-            Evaluationitem eval = (Evaluationitem) session.get(Evaluationitem.class, evaluationItem.getIdEvaluationItem());
+            EvaluationItem eval = (EvaluationItem) session.get(EvaluationItem.class, evaluationItem.getIdEvaluationItem());
             if (eval != null) {
                 list.add(eval);
             }
@@ -84,12 +84,12 @@ public class EvaluationItemRepository {
      * @param evaluationItem upravovana otazka v pohovoru
      * @return true, pokud vse skonci v poradku; false v opacnem pripade
      */
-    public boolean edit(Evaluationitem evaluationItem) {
+    public boolean edit(EvaluationItem evaluationItem) {
         boolean value = false;
         
         if (evaluationItem != null) {
             // kontrola, jestli je v db
-            Evaluationitem evalItem = (Evaluationitem) session.get(Evaluationitem.class, evaluationItem.getIdEvaluationItem());
+            EvaluationItem evalItem = (EvaluationItem) session.get(EvaluationItem.class, evaluationItem.getIdEvaluationItem());
             
             if (validateEvaluationItem(evaluationItem) && evalItem != null) {
                 session.beginTransaction();
@@ -108,12 +108,12 @@ public class EvaluationItemRepository {
      * @param evaluationItem pridavana otazka v pohovoru
      * @return true, pokud vse skonci v poradku; false v opacnem pripade
      */
-    public boolean create(Evaluationitem evaluationItem) {
+    public boolean create(EvaluationItem evaluationItem) {
         boolean value = false;
         if (evaluationItem != null) {
             
             // kontrola, jestli neni v db
-            Evaluationitem evalItem = (Evaluationitem) session.get(Evaluationitem.class, evaluationItem.getIdEvaluationItem());
+            EvaluationItem evalItem = (EvaluationItem) session.get(EvaluationItem.class, evaluationItem.getIdEvaluationItem());
             
             if (validateEvaluationItem(evaluationItem) && evalItem == null) {
                 session.beginTransaction();
@@ -137,7 +137,7 @@ public class EvaluationItemRepository {
         
         if (id > 0) {
             // vyhleda zamestnance
-            Evaluationitem evaluationItem = (Evaluationitem) session.get(Evaluationitem.class, id);
+            EvaluationItem evaluationItem = (EvaluationItem) session.get(EvaluationItem.class, id);
             
             // pokud neni null, smaze se
             if (evaluationItem != null && validateEvaluationItem(evaluationItem)) {
@@ -152,7 +152,7 @@ public class EvaluationItemRepository {
     }
     
     /**
-     * Metoda nachazi volne id pro Evaluationitem.
+     * Metoda nachazi volne id pro EvaluationItem.
      * 
      * @return volne id
      */
@@ -160,7 +160,7 @@ public class EvaluationItemRepository {
         session.beginTransaction();
 
         // setridene id do listu
-        Criteria criteria = session.createCriteria(Evaluationitem.class).setProjection(Projections.property("idEvaluationItem")).addOrder(Order.desc("idEvaluationItem"));
+        Criteria criteria = session.createCriteria(EvaluationItem.class).setProjection(Projections.property("idEvaluationItem")).addOrder(Order.desc("idEvaluationItem"));
         
         List<Integer> list = criteria.list();
         
@@ -193,13 +193,13 @@ public class EvaluationItemRepository {
     }
     
     /**
-     * Pomocna metoda, ktera validuje Evaluationitem. 
-     * Kontroluje neprazdnost udaju Evaluationitem, pokud je otazka prazdna, vrati se false.
+     * Pomocna metoda, ktera validuje EvaluationItem. 
+     * Kontroluje neprazdnost udaju EvaluationItem, pokud je otazka prazdna, vrati se false.
      * 
      * @param evaluationItem otazka
      * @return true, pokud je validni; jinak false
      */
-    private boolean validateEvaluationItem(Evaluationitem evaluationItem) {
+    private boolean validateEvaluationItem(EvaluationItem evaluationItem) {
         return (evaluationItem.getCategory() != null);
     }
 }

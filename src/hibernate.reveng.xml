@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE hibernate-reverse-engineering PUBLIC "-//Hibernate/Hibernate Reverse Engineering DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-reverse-engineering-3.0.dtd">
 <hibernate-reverse-engineering>
-  <schema-selection match-catalog="employeeevaluator"/>
-  <table-filter match-name="evaluationitem"/>
-  <table-filter match-name="category"/>
-  <table-filter match-name="evaluation"/>
-  <table-filter match-name="employee"/>
+  <schema-selection match-catalog="xkovj41"/>
+  <table-filter match-name="Employee"/>
+  <table-filter match-name="EvaluationItem"/>
+  <table-filter match-name="Evaluation"/>
+  <table-filter match-name="Category"/>
 </hibernate-reverse-engineering>

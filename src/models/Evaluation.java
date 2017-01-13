@@ -1,5 +1,5 @@
 package models;
-// Generated 3.1.2017 19:50:21 by Hibernate Tools 4.3.1
+// Generated 13.1.2017 16:33:39 by Hibernate Tools 4.3.1
 
 
 import java.util.Date;
@@ -17,7 +17,7 @@ public class Evaluation  implements java.io.Serializable {
      private Date evaluationDate;
      private Date plannedDate;
      private String stornoReason;
-     private Set evaluationitems = new HashSet(0);
+     private Set evaluationItems = new HashSet(0);
 
     public Evaluation() {
     }
@@ -28,13 +28,13 @@ public class Evaluation  implements java.io.Serializable {
         this.employee = employee;
         this.plannedDate = plannedDate;
     }
-    public Evaluation(int idEvaluation, Employee employee, Date evaluationDate, Date plannedDate, String stornoReason, Set evaluationitems) {
+    public Evaluation(int idEvaluation, Employee employee, Date evaluationDate, Date plannedDate, String stornoReason, Set evaluationItems) {
        this.idEvaluation = idEvaluation;
        this.employee = employee;
        this.evaluationDate = evaluationDate;
        this.plannedDate = plannedDate;
        this.stornoReason = stornoReason;
-       this.evaluationitems = evaluationitems;
+       this.evaluationItems = evaluationItems;
     }
    
     public int getIdEvaluation() {
@@ -72,12 +72,12 @@ public class Evaluation  implements java.io.Serializable {
     public void setStornoReason(String stornoReason) {
         this.stornoReason = stornoReason;
     }
-    public Set getEvaluationitems() {
-        return this.evaluationitems;
+    public Set getEvaluationItems() {
+        return this.evaluationItems;
     }
     
-    public void setEvaluationitems(Set evaluationitems) {
-        this.evaluationitems = evaluationitems;
+    public void setEvaluationItems(Set evaluationItems) {
+        this.evaluationItems = evaluationItems;
     }
 
 

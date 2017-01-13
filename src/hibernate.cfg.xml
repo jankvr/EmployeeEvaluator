@@ -4,10 +4,13 @@
   <session-factory>
     <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
     <property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
+    <!--
     <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/employeeevaluator?zeroDateTimeBehavior=convertToNull</property>
     <property name="hibernate.connection.username">root</property>
-    <property name="hibernate.connection.password">root</property>
-    
+    <property name="hibernate.connection.password">root</property> -->
+    <property name="hibernate.connection.url">jdbc:mysql://4it353.vse.cz:3306/xkovj41?zeroDateTimeBehavior=convertToNull</property>
+    <property name="hibernate.connection.username">xkovj41</property>
+    <property name="hibernate.connection.password">xkovj41</property>
     <!-- druhy connection string -->
     <!--<property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
     <property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
@@ -20,7 +23,7 @@
     <property name="format_sql">true</property>
     <property name="use_sql_comments">true</property> 
     -->
-    <mapping resource="models/Evaluationitem.hbm.xml"/>
+    <mapping resource="models/EvaluationItem.hbm.xml"/>
     <mapping resource="models/Evaluation.hbm.xml"/>
     <mapping resource="models/Category.hbm.xml"/>
     <mapping resource="models/Employee.hbm.xml"/>
