@@ -17,6 +17,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
@@ -24,6 +25,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -32,7 +34,9 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import models.Category;
 import models.Employee;
+import models.Evaluation;
 import repositories.EmployeeRepository;
 
 /**
@@ -52,6 +56,7 @@ public class EmployeeEvaluator extends Application {
     GridPane editCategoryScreen;
     GridPane deleteCategoryScreen;
     EmployeeRepository er;
+    BorderPane root;
     
     
     
@@ -109,7 +114,7 @@ public class EmployeeEvaluator extends Application {
         
         
         // ------------------- GUI --------------------------------------------------
-        BorderPane root = new BorderPane();
+        root = new BorderPane();
         
         Button allEmployeesBtn = new Button();
         allEmployeesBtn.setText("Všetci zamestnanci");
@@ -128,21 +133,7 @@ public class EmployeeEvaluator extends Application {
         });
         newEmployeeBtn.setPrefWidth(200);
         
-        Button editEmployeeBtn = new Button();
-        editEmployeeBtn.setText("Upraviť zamestnanca");
-        editEmployeeBtn.setOnAction((ActionEvent event) -> {
-            System.out.println("upraviťzamestnanca!");
-            root.setCenter(editEmployeeScreen);
-        });
-        editEmployeeBtn.setPrefWidth(200);
-        
-        Button deleteEmployeeBtn = new Button();
-        deleteEmployeeBtn.setText("Vymazať zamestnanca");
-        deleteEmployeeBtn.setOnAction((ActionEvent event) -> {
-            System.out.println("vymazaťzame");
-            root.setCenter(deleteEmployeeScreen);
-        });
-        deleteEmployeeBtn.setPrefWidth(200);
+
         
         
         
@@ -153,8 +144,8 @@ public class EmployeeEvaluator extends Application {
         VBox menu = new VBox();
         menu.getChildren().add(allEmployeesBtn);
         menu.getChildren().add(newEmployeeBtn);
-        menu.getChildren().add(editEmployeeBtn);
-        menu.getChildren().add(deleteEmployeeBtn);
+        //menu.getChildren().add(editEmployeeBtn);
+        //menu.getChildren().add(deleteEmployeeBtn);
         
         
         root.setLeft(menu);
@@ -185,9 +176,20 @@ public class EmployeeEvaluator extends Application {
     private void setScreens(){
         
         //základná obrazovka
+        
         allEmployeesScreen = new TableView<Employee>();
+        
+        
+        
+        
         //keď budem mať prístup k DB 
-//        allEmployeesScreen.setItems((ObservableList)er.getAllEmployees());
+        refreshEmployeeTable();
+//        
+
+//        ObservableList<Employee> ol = FXCollections.observableArrayList();
+//        ol.add(new Employee(0, "Andrej", "Hopko", "1234567890", "úrad práce"));
+//        ol.add(new Employee(1, "Anton", "Buday", "940912/1234", "všeznalec"));
+//        allEmployeesScreen.setItems(ol);
 //        TableColumn<Employee,String> firstNameCol = new TableColumn<Employee,String>("First Name");
 //        firstNameCol.setCellValueFactory(new PropertyValueFactory("firstName"));
 //        TableColumn<Employee,String> lastNameCol = new TableColumn<Employee,String>("Last Name");
@@ -196,22 +198,8 @@ public class EmployeeEvaluator extends Application {
 //        birthNumberCol.setCellValueFactory(new PropertyValueFactory("birthNumber"));
 //        TableColumn<Employee,String> roleCol = new TableColumn<Employee,String>("Role");
 //        roleCol.setCellValueFactory(new PropertyValueFactory("role"));
-//        
 
-        ObservableList<Employee> ol = FXCollections.observableArrayList();
-        ol.add(new Employee(0, "Andrej", "Hopko", "1234567890", "úrad práce"));
-        ol.add(new Employee(1, "Anton", "Buday", "940912/1234", "všeznalec"));
-        allEmployeesScreen.setItems(ol);
-        TableColumn<Employee,String> firstNameCol = new TableColumn<Employee,String>("First Name");
-        firstNameCol.setCellValueFactory(new PropertyValueFactory("firstName"));
-        TableColumn<Employee,String> lastNameCol = new TableColumn<Employee,String>("Last Name");
-        lastNameCol.setCellValueFactory(new PropertyValueFactory("lastName"));
-        TableColumn<Employee,String> birthNumberCol = new TableColumn<Employee,String>("Birth Number");
-        birthNumberCol.setCellValueFactory(new PropertyValueFactory("birthNumber"));
-        TableColumn<Employee,String> roleCol = new TableColumn<Employee,String>("Role");
-        roleCol.setCellValueFactory(new PropertyValueFactory("role"));
-
-        allEmployeesScreen.getColumns().setAll(firstNameCol, lastNameCol, birthNumberCol, roleCol);
+        
         
         allEmployeesScreen.setRowFactory( tv -> {
             TableRow<Employee> row = new TableRow<>();
@@ -219,11 +207,12 @@ public class EmployeeEvaluator extends Application {
                 if (event.getClickCount() == 1 && (! row.isEmpty()) ) {
                     //zmeniť screen na detail zamestnanca
                     Employee rowData = row.getItem();
-                    System.out.println(rowData);
+                    System.out.println("zoberazujem detail zamestnanca"+rowData);
+                    root.setCenter(employeeDetail(rowData));
                 }
             });
         return row ;
-});
+        });
   
         newEmployeeScreen = new GridPane();
         newEmployeeScreen.setAlignment(Pos.CENTER);
@@ -263,6 +252,137 @@ public class EmployeeEvaluator extends Application {
         
         
     }
+    
+    private Pane employeeDetail(Employee employee){
+        VBox detailScreen = new VBox();
+            HBox detailScreenButtons = new HBox();
+                Button editEmployeeBtn = new Button();
+                editEmployeeBtn.setText("Upraviť zamestnanca");
+                editEmployeeBtn.setOnAction((ActionEvent event) -> {
+                    System.out.println("upraviťzamestnanca!");
+                    
+                    root.setCenter(editEmployeeScreen);
+                });
+                editEmployeeBtn.setPrefWidth(200);
+
+                Button deleteEmployeeBtn = new Button();
+                deleteEmployeeBtn.setText("Vymazať zamestnanca");
+                deleteEmployeeBtn.setOnAction((ActionEvent event) -> {
+                    System.out.println("vymazaťzame");
+                    er.delete(employee.getIdEmployee());
+                    refreshEmployeeTable();
+                    root.setCenter(allEmployeesScreen);
+                });
+                deleteEmployeeBtn.setPrefWidth(200);  
+            detailScreenButtons.getChildren().add(editEmployeeBtn);
+            detailScreenButtons.getChildren().add(deleteEmployeeBtn);
+        
+            VBox detailScreenData = new VBox();
+            detailScreenData.getChildren().add(new Text("Meno: "+employee.getFirstName()));
+            detailScreenData.getChildren().add(new Text("Priezvisko: "+employee.getLastName()));
+            detailScreenData.getChildren().add(new Text("Rodné číslo: "+employee.getBirthNumber()));
+            detailScreenData.getChildren().add(new Text("Rola: "+employee.getRole()));
+            
+
+            
+            TableView<Evaluation> evaluationTable = new TableView<Evaluation>();
+            evaluationTable.setItems(FXCollections.observableArrayList(employee.getEvaluations()));
+            TableColumn<Evaluation,String> evaluationDateCol = new TableColumn<Evaluation,String>("Evaluation date");
+            evaluationDateCol.setCellValueFactory(new PropertyValueFactory("evaluationDate"));
+            TableColumn<Employee,String> plannedDateCol = new TableColumn<Employee,String>("Planned Date");
+            plannedDateCol.setCellValueFactory(new PropertyValueFactory("plannedDate"));
+            TableColumn<Employee,String> stornoReasonCol = new TableColumn<Employee,String>("Storno Reason");
+            stornoReasonCol.setCellValueFactory(new PropertyValueFactory("stornoReason"));
+            evaluationTable.setRowFactory( tv -> {
+            TableRow<Evaluation> row = new TableRow<>();
+            row.setOnMouseClicked(event -> {
+                if (event.getClickCount() == 1 && (! row.isEmpty()) ) {
+                    //zmeniť screen na detail zamestnanca
+                    Evaluation rowData = row.getItem();
+                    System.out.println("zoberazujem detail zamestnanca"+rowData);
+                    root.setCenter(evaluationDetail(rowData));
+                }
+            });
+            return row ;
+            });
+            
+        detailScreen.getChildren().add(detailScreenButtons);
+        detailScreen.getChildren().add(detailScreenData);
+        detailScreen.getChildren().add(evaluationTable);
+        return detailScreen;
+    }
+    
+    private Pane evaluationDetail(Evaluation evaluation){
+        VBox detailScreen = new VBox();
+            HBox detailScreenButtons = new HBox();
+                Button editEvaluationBtn = new Button();
+                editEvaluationBtn.setText("Upraviť pohovor");
+                editEvaluationBtn.setOnAction((ActionEvent event) -> {
+                    System.out.println("upraviťpohovor!");
+                    
+                    root.setCenter(editEvaluationScreen);
+                });
+                editEvaluationBtn.setPrefWidth(200);
+
+                Button deleteEvaluationBtn = new Button();
+                deleteEvaluationBtn.setText("Vymazať pohovor");
+                deleteEvaluationBtn.setOnAction((ActionEvent event) -> {
+                    System.out.println("vymazaťpohovor");
+                    er.delete(evaluation.getIdEvaluation());
+                    refreshEmployeeTable();
+                    root.setCenter(allEmployeesScreen);
+                });
+                deleteEvaluationBtn.setPrefWidth(200);  
+            detailScreenButtons.getChildren().add(editEvaluationBtn);
+            detailScreenButtons.getChildren().add(deleteEvaluationBtn);
+        
+            VBox detailScreenData = new VBox();
+            detailScreenData.getChildren().add(new Text("Evaluation date: "+evaluation.getEvaluationDate()));
+            detailScreenData.getChildren().add(new Text("Planned Date: "+evaluation.getPlannedDate()));
+            detailScreenData.getChildren().add(new Text("Storno reason: "+evaluation.getStornoReason()));
+            
+
+            
+            TableView<Category> categoryTable = new TableView<Category>();
+//            categoryTable.setItems(FXCollections.observableArrayList(evaluation.getEvaluationItems()));
+//            TableColumn<Evaluation,String> evaluationDateCol = new TableColumn<Evaluation,String>("Evaluation date");
+//            evaluationDateCol.setCellValueFactory(new PropertyValueFactory("evaluationDate"));
+//            TableColumn<Employee,String> plannedDateCol = new TableColumn<Employee,String>("Planned Date");
+//            plannedDateCol.setCellValueFactory(new PropertyValueFactory("plannedDate"));
+//            TableColumn<Employee,String> stornoReasonCol = new TableColumn<Employee,String>("Storno Reason");
+//            stornoReasonCol.setCellValueFactory(new PropertyValueFactory("stornoReason"));
+//            evaluationTable.setRowFactory( tv -> {
+//            TableRow<Evaluation> row = new TableRow<>();
+//            row.setOnMouseClicked(event -> {
+//                if (event.getClickCount() == 1 && (! row.isEmpty()) ) {
+//                    //zmeniť screen na detail zamestnanca
+//                    Evaluation rowData = row.getItem();
+//                    System.out.println("zoberazujem detail zamestnanca"+rowData);
+//                    root.setCenter(evalautionDetail(rowData));
+//                }
+//            });
+//            return row ;
+//            });
+            
+        detailScreen.getChildren().add(detailScreenButtons);
+        detailScreen.getChildren().add(detailScreenData);
+        detailScreen.getChildren().add(categoryTable);
+        return detailScreen;
+    }
+    
+    public void refreshEmployeeTable(){
+        allEmployeesScreen.setItems(FXCollections.observableArrayList(er.getAllEmployees()));
+        TableColumn<Employee,String> firstNameCol = new TableColumn<Employee,String>("First Name");
+        firstNameCol.setCellValueFactory(new PropertyValueFactory("firstName"));
+        TableColumn<Employee,String> lastNameCol = new TableColumn<Employee,String>("Last Name");
+        lastNameCol.setCellValueFactory(new PropertyValueFactory("lastName"));
+        TableColumn<Employee,String> birthNumberCol = new TableColumn<Employee,String>("Birth Number");
+        birthNumberCol.setCellValueFactory(new PropertyValueFactory("birthNumber"));
+        TableColumn<Employee,String> roleCol = new TableColumn<Employee,String>("Role");
+        roleCol.setCellValueFactory(new PropertyValueFactory("role"));
+        allEmployeesScreen.getColumns().setAll(firstNameCol, lastNameCol, birthNumberCol, roleCol);
+    }
+    
     /**
      * @param args the command line arguments
      */
