@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
-<!-- Generated 13.1.2017 16:33:40 by Hibernate Tools 4.3.1 -->
+<!-- Generated 13.1.2017 16:36:18 by Hibernate Tools 4.3.1 -->
 <hibernate-mapping>
     <class name="models.Evaluation" table="Evaluation" catalog="xkovj41" optimistic-lock="version">
         <id name="idEvaluation" type="int">
