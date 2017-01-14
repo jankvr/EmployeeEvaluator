@@ -63,55 +63,55 @@ public class EmployeeEvaluator extends Application {
     
     @Override
     public void start(Stage primaryStage) {
-//        // --------------------- TESTY --------------------------------------------------------
-        /*EmployeeRepository*/ er = new EmployeeRepository();
-
-        Employee employee = new Employee();
-        
-        employee.setFirstName("Ja%");
-        
-        Employee emp2 = new Employee();
-        emp2.setIdEmployee(1);
-        
-        er.getEmployeesByParameters(employee).stream().forEach((a) -> {
-            System.out.println("like " +a.getFirstName() + " " + a.getLastName());
-        });
-        
-        er.getEmployeesByParameters(emp2).stream().forEach((a) -> {
-            System.out.println("param " + a.getFirstName() + " " + a.getLastName());
-        });
-        
-        
-        er.getAllEmployees().stream().forEach((a) -> {
-            System.out.println("all " + a.getFirstName() + " " + a.getLastName());
-        });
-        
-        Employee emp3 = new Employee();
-        
-        emp3.setRole("Tester");
-        emp3.setLastName("Burtik%");
-        
-        er.getEmployeesByParameters(emp3).stream().forEach((a) -> {
-            System.out.println("tester " + a.getFirstName() + " " + a.getLastName());
-        });
-        
-        System.out.println(er.freeId());
-        
-        System.out.println("delete: " + er.delete(5));
-        
-        Employee empToAdd = new Employee();
-        
-        empToAdd.setBirthNumber("1234");
-        empToAdd.setFirstName("bubak");
-        empToAdd.setLastName("bubinovity");
-        empToAdd.setRole("konik");
-        empToAdd.setIdEmployee(er.freeId());
-        
-        System.out.println("adding emp -> " + empToAdd.getIdEmployee() + ": " + er.create(empToAdd));
-        
-        //empToAdd.setIdEmployee(30);
-        empToAdd.setBirthNumber("999123456");
-        System.out.println("edit emp: " + er.edit(empToAdd));
+        // --------------------- TESTY --------------------------------------------------------
+//        er = new EmployeeRepository();
+//
+//        Employee employee = new Employee();
+//        
+//        employee.setFirstName("Ja%");
+//        
+//        Employee emp2 = new Employee();
+//        emp2.setIdEmployee(1);
+//        
+//        er.getEmployeesByParameters(employee).stream().forEach((a) -> {
+//            System.out.println("like " +a.getFirstName() + " " + a.getLastName());
+//        });
+//        
+//        er.getEmployeesByParameters(emp2).stream().forEach((a) -> {
+//            System.out.println("param " + a.getFirstName() + " " + a.getLastName());
+//        });
+//        
+//        
+//        er.getAllEmployees().stream().forEach((a) -> {
+//            System.out.println("all " + a.getFirstName() + " " + a.getLastName());
+//        });
+//        
+//        Employee emp3 = new Employee();
+//        
+//        emp3.setRole("Tester");
+//        emp3.setLastName("Burtik%");
+//        
+//        er.getEmployeesByParameters(emp3).stream().forEach((a) -> {
+//            System.out.println("tester " + a.getFirstName() + " " + a.getLastName());
+//        });
+//        
+//        System.out.println(er.freeId());
+//        
+//        System.out.println("delete: " + er.delete(5));
+//        
+//        Employee empToAdd = new Employee();
+//        
+//        empToAdd.setBirthNumber("1234");
+//        empToAdd.setFirstName("bubak");
+//        empToAdd.setLastName("bubinovity");
+//        empToAdd.setRole("konik");
+//        empToAdd.setIdEmployee(er.freeId());
+//        
+//        System.out.println("adding emp -> " + empToAdd.getIdEmployee() + ": " + er.create(empToAdd));
+//        
+//        //empToAdd.setIdEmployee(30);
+//        empToAdd.setBirthNumber("999123456");
+//        System.out.println("edit emp: " + er.edit(empToAdd));
         
         
         // ------------------- GUI --------------------------------------------------
@@ -388,7 +388,7 @@ public class EmployeeEvaluator extends Application {
                     final Employee newEmployee = new Employee(employee.getIdEmployee(),firstNameField.getText(),
                             lastNameField.getText(),birthNumberField.getText(),
                             roleField.getText());
-                    //er.edit(newEmployee); //hádže NonUniqueObjectException
+                    er.edit(newEmployee); //hádže NonUniqueObjectException
                     refreshEmployeeTable();
                     root.setCenter(allEmployeesScreen);
                 });
