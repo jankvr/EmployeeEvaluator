@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 14.1.2017 17:28:00 by Hibernate Tools 4.3.1 -->
+<hibernate-mapping>
+  <class catalog="xkovj41" name="model.Category" optimistic-lock="version" table="Category">
+    <id name="idCategory" type="int">
+      <column name="IdCategory"/>
+      <generator class="assigned"/>
+    </id>
+    <property name="description" type="string">
+      <column length="4096" name="Description" not-null="true"/>
+    </property>
+    <property name="coefficient" type="int">
+      <column name="Coefficient" not-null="true"/>
+    </property>
+    <set fetch="select" inverse="true" lazy="true" name="evaluationItems" table="EvaluationItem">
+      <key>
+        <column name="IdCategory" not-null="true"/>
+      </key>
+      <one-to-many class="model.EvaluationItem"/>
+    </set>
+  </class>
+</hibernate-mapping>

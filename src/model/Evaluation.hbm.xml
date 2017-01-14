@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 14.1.2017 17:28:00 by Hibernate Tools 4.3.1 -->
+<hibernate-mapping>
+  <class catalog="xkovj41" name="model.Evaluation" optimistic-lock="version" table="Evaluation">
+    <id name="idEvaluation" type="int">
+      <column name="IdEvaluation"/>
+      <generator class="assigned"/>
+    </id>
+    <many-to-one class="model.Employee" fetch="select" name="employee">
+      <column name="IdEmployee" not-null="true"/>
+    </many-to-one>
+    <property name="evaluationDate" type="timestamp">
+      <column length="19" name="EvaluationDate"/>
+    </property>
+    <property name="plannedDate" type="timestamp">
+      <column length="19" name="PlannedDate" not-null="true"/>
+    </property>
+    <property name="stornoReason" type="string">
+      <column length="4096" name="StornoReason"/>
+    </property>
+    <set fetch="select" inverse="true" lazy="true" name="evaluationItems" table="EvaluationItem">
+      <key>
+        <column name="IdEvaluation" not-null="true"/>
+      </key>
+      <one-to-many class="model.EvaluationItem"/>
+    </set>
+  </class>
+</hibernate-mapping>

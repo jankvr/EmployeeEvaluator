@@ -3,11 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package repositories;
+package repository;
 
 import java.util.ArrayList;
 import java.util.List;
-import models.Category;
+import model.Evaluation;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -17,16 +17,16 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 
 /**
- * Trida fungujici jako repozitar pro otazky. Prikazy jsou formovany ve stylu "QBE".
+ * Trida fungujici jako repozitar pro pohovory. Prikazy jsou formovany ve stylu "QBE".
  * @author Jan Kovar
  */
-public class CategoryRepository {
+public class EvaluationRepository {
     private final Session session;
     
     /**
      * Konstruktor, ktery vytvari session a uklada si ji do atributu.
      */
-    public CategoryRepository() {
+    public EvaluationRepository() {
         SessionFactory sessionFactory = new Configuration().configure().buildSessionFactory();
         
         this.session = sessionFactory.openSession();
@@ -34,43 +34,43 @@ public class CategoryRepository {
     
     
     /**
-     * Vraci vsechny otazky z databaze serazenych podle id.
-     * @return seznam vsech otazek
+     * Vraci vsechny pohovory z databaze serazenych podle id.
+     * @return seznam vsech pohovoru
      */
-    public List<Category> getAllCategories() {
+    public List<Evaluation> getAllEvaluations() {
         session.beginTransaction();
 
-        Criteria criteria = session.createCriteria(Category.class).addOrder(Order.asc("idCategory"));
-        List<Category> list = criteria.list();
+        Criteria criteria = session.createCriteria(Evaluation.class).addOrder(Order.asc("idEvaluation"));
+        List<Evaluation> list = criteria.list();
         
         session.getTransaction().commit();
         return list;
     }
     
     /**
-     * Vyhledavani otazek na zaklade danych parametru.
-     * Logika je nasledujici: prozkouma se otazka predana v parametru a vyhleda se v databazi pomoci poli jinych, nez je primarni klic.
+     * Vyhledavani pohovoru na zaklade danych parametru.
+     * Logika je nasledujici: prozkouma se pohovor predany v parametru a vyhleda se v databazi pomoci poli jinych, nez je primarni klic.
      * Pokud je zadan i primarni klic, vyhledava se primarne podle nej.
      * 
-     * @param category
-     * @return seznam relevantnich otazek
+     * @param evaluation pohovor
+     * @return seznam relevantnich pohovoru
      */
-    public List<Category> getCategoriesByParameters(Category category) {
+    public List<Evaluation> getEvaluationsByParameter(Evaluation evaluation) {
         session.beginTransaction();
 
         Example example;
-        List<Category> list = new ArrayList<>();
+        List<Evaluation> list = new ArrayList<>();
         
         //vyhledavani podle parametru
-        if (category.getIdCategory()<= 0) {
-            example = Example.create(category).enableLike();
-            Criteria criteria = session.createCriteria(Category.class).add(example);
+        if (evaluation.getIdEvaluation()<= 0) {
+            example = Example.create(evaluation).enableLike();
+            Criteria criteria = session.createCriteria(Evaluation.class).add(example);
             list = criteria.list();
         }
         else { //vyhledavani podle ids
-            Category cat = (Category) session.get(Category.class, category.getIdCategory());
-            if (cat != null) {
-                list.add(cat);
+            Evaluation eval = (Evaluation) session.get(Evaluation.class, evaluation.getIdEvaluation());
+            if (eval != null) {
+                list.add(eval);
             }
         }
         
@@ -79,21 +79,21 @@ public class CategoryRepository {
     }
     
     /**
-     * Upravuje otazku.
+     * Upravuje pohovor.
      * 
-     * @param category upravovana otazka
+     * @param evaluation upravovany pohovor
      * @return true, pokud vse skonci v poradku; false v opacnem pripade
      */
-    public boolean edit(Category category) {
+    public boolean edit(Evaluation evaluation) {
         boolean value = false;
         
-        if (category != null) {
+        if (evaluation != null) {
             // kontrola, jestli je v db
-            Category cat = (Category) session.get(Category.class, category.getIdCategory());
+            Evaluation eval = (Evaluation) session.get(Evaluation.class, evaluation.getIdEvaluation());
             
-            if (validateCategory(category) && cat != null) {
+            if (validateEvaluation(evaluation) && eval != null) {
                 session.beginTransaction();
-                session.update(category);
+                session.merge(evaluation);
                 value = true;
                 session.getTransaction().commit();
             } 
@@ -105,19 +105,19 @@ public class CategoryRepository {
     /**
      * Vytvari otazku.
      * 
-     * @param category pridavana otazka
+     * @param evaluation pridavany pohovor
      * @return true, pokud vse skonci v poradku; false v opacnem pripade
      */
-    public boolean create(Category category) {
+    public boolean create(Evaluation evaluation) {
         boolean value = false;
-        if (category != null) {
+        if (evaluation != null) {
             
             // kontrola, jestli neni v db
-            Category cat = (Category) session.get(Category.class, category.getIdCategory());
+            Evaluation eval = (Evaluation) session.get(Evaluation.class, evaluation.getIdEvaluation());
             
-            if (validateCategory(category) && cat == null) {
+            if (validateEvaluation(evaluation) && eval == null) {
                 session.beginTransaction();
-                session.save(category);
+                session.save(evaluation);
                 session.getTransaction().commit();
                 value = true;
             }
@@ -129,7 +129,7 @@ public class CategoryRepository {
     /**
      * Maze otazku.
      * 
-     * @param id id mazane otazky
+     * @param id id mazaneho pohovoru
      * @return true, pokud vse skonci v poradku; false v opacnem pripade
      */
     public boolean delete(int id) {
@@ -137,12 +137,12 @@ public class CategoryRepository {
         
         if (id > 0) {
             // vyhleda zamestnance
-            Category category = (Category) session.get(Category.class, id);
+            Evaluation evaluation = (Evaluation) session.get(Evaluation.class, id);
             
             // pokud neni null, smaze se
-            if (category != null && validateCategory(category)) {
+            if (evaluation != null && validateEvaluation(evaluation)) {
                 session.beginTransaction();
-                session.delete(category);
+                session.delete(evaluation);
                 session.getTransaction().commit();
                 value = true;
             }
@@ -152,7 +152,7 @@ public class CategoryRepository {
     }
     
     /**
-     * Metoda nachazi volne id pro Category.
+     * Metoda nachazi volne id pro Evaluation.
      * 
      * @return volne id
      */
@@ -160,7 +160,7 @@ public class CategoryRepository {
         session.beginTransaction();
 
         // setridene id do listu
-        Criteria criteria = session.createCriteria(Category.class).setProjection(Projections.property("idCategory")).addOrder(Order.desc("idCategory"));
+        Criteria criteria = session.createCriteria(Evaluation.class).setProjection(Projections.property("idEvaluation")).addOrder(Order.desc("idEvaluation"));
         
         List<Integer> list = criteria.list();
         
@@ -193,13 +193,13 @@ public class CategoryRepository {
     }
     
     /**
-     * Pomocna metoda, ktera validuje category. 
-     * Kontroluje neprazdnost udaju category, pokud je jeden prvek prazdny, vrati se false.
+     * Pomocna metoda, ktera validuje pohovor. 
+     * Kontroluje neprazdnost udaju pohovoru, pokud je planovane datum prazdne, vrati se false.
      * 
-     * @param category otazka
+     * @param evaluation otazka
      * @return true, pokud je validni; jinak false
      */
-    private boolean validateCategory(Category category) {
-        return (category.getDescription() != null);
+    private boolean validateEvaluation(Evaluation evaluation) {
+        return (evaluation.getPlannedDate() != null);
     }
 }

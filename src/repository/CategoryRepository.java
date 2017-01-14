@@ -3,11 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package repositories;
+package repository;
 
 import java.util.ArrayList;
 import java.util.List;
-import models.Employee;
+import model.Category;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -17,19 +17,16 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 
 /**
- *
- * Trida fungujici jako repozitar pro zamestnance. Prikazy jsou formovany ve stylu "QBE".
- * 
+ * Trida fungujici jako repozitar pro otazky. Prikazy jsou formovany ve stylu "QBE".
  * @author Jan Kovar
  */
-public class EmployeeRepository {
-    
+public class CategoryRepository {
     private final Session session;
     
     /**
      * Konstruktor, ktery vytvari session a uklada si ji do atributu.
      */
-    public EmployeeRepository() {
+    public CategoryRepository() {
         SessionFactory sessionFactory = new Configuration().configure().buildSessionFactory();
         
         this.session = sessionFactory.openSession();
@@ -37,43 +34,43 @@ public class EmployeeRepository {
     
     
     /**
-     * Vraci vsechny zamestnance z databaze serazenych podle id.
-     * @return seznam vsech zamestnancu
+     * Vraci vsechny otazky z databaze serazenych podle id.
+     * @return seznam vsech otazek
      */
-    public List<Employee> getAllEmployees() {
+    public List<Category> getAllCategories() {
         session.beginTransaction();
 
-        Criteria criteria = session.createCriteria(Employee.class).addOrder(Order.asc("idEmployee"));
-        List<Employee> list = criteria.list();
+        Criteria criteria = session.createCriteria(Category.class).addOrder(Order.asc("idCategory"));
+        List<Category> list = criteria.list();
         
         session.getTransaction().commit();
         return list;
     }
     
     /**
-     * Vyhledavani zamestnancu na zaklade danych parametru.
-     * Logika je nasledujici: prozkouma se zamestnanec predany v parametru a vyhleda se v databazi pomoci poli jinych, nez je primarni klic.
+     * Vyhledavani otazek na zaklade danych parametru.
+     * Logika je nasledujici: prozkouma se otazka predana v parametru a vyhleda se v databazi pomoci poli jinych, nez je primarni klic.
      * Pokud je zadan i primarni klic, vyhledava se primarne podle nej.
      * 
-     * @param employee
-     * @return seznam relevantnich zamestnancu
+     * @param category
+     * @return seznam relevantnich otazek
      */
-    public List<Employee> getEmployeesByParameters(Employee employee) {
+    public List<Category> getCategoriesByParameters(Category category) {
         session.beginTransaction();
 
         Example example;
-        List<Employee> list = new ArrayList<>();
+        List<Category> list = new ArrayList<>();
         
         //vyhledavani podle parametru
-        if (employee.getIdEmployee() <= 0) {
-            example = Example.create(employee).enableLike();
-            Criteria criteria = session.createCriteria(Employee.class).add(example);
+        if (category.getIdCategory()<= 0) {
+            example = Example.create(category).enableLike();
+            Criteria criteria = session.createCriteria(Category.class).add(example);
             list = criteria.list();
         }
         else { //vyhledavani podle ids
-            Employee emp = (Employee) session.get(Employee.class, employee.getIdEmployee());
-            if (emp != null) {
-                list.add(emp);
+            Category cat = (Category) session.get(Category.class, category.getIdCategory());
+            if (cat != null) {
+                list.add(cat);
             }
         }
         
@@ -82,21 +79,21 @@ public class EmployeeRepository {
     }
     
     /**
-     * Upravuje zamestnance.
+     * Upravuje otazku.
      * 
-     * @param employee upravovany zamestnanec
+     * @param category upravovana otazka
      * @return true, pokud vse skonci v poradku; false v opacnem pripade
      */
-    public boolean edit(Employee employee) {
+    public boolean edit(Category category) {
         boolean value = false;
         
-        if (employee != null) {
+        if (category != null) {
             // kontrola, jestli je v db
-            Employee emp = (Employee) session.get(Employee.class, employee.getIdEmployee());
+            Category cat = (Category) session.get(Category.class, category.getIdCategory());
             
-            if (validateEmployee(employee) && emp != null) {
+            if (validateCategory(category) && cat != null) {
                 session.beginTransaction();
-                session.update(employee);
+                session.merge(category); // puvodne update
                 value = true;
                 session.getTransaction().commit();
             } 
@@ -106,21 +103,21 @@ public class EmployeeRepository {
     }
 
     /**
-     * Vytvari zamestnance.
+     * Vytvari otazku.
      * 
-     * @param employee pridavany zamestnanec
+     * @param category pridavana otazka
      * @return true, pokud vse skonci v poradku; false v opacnem pripade
      */
-    public boolean create(Employee employee) {
+    public boolean create(Category category) {
         boolean value = false;
-        if (employee != null) {
+        if (category != null) {
             
             // kontrola, jestli neni v db
-            Employee emp = (Employee) session.get(Employee.class, employee.getIdEmployee());
+            Category cat = (Category) session.get(Category.class, category.getIdCategory());
             
-            if (validateEmployee(employee) && emp == null) {
+            if (validateCategory(category) && cat == null) {
                 session.beginTransaction();
-                session.save(employee);
+                session.save(category);
                 session.getTransaction().commit();
                 value = true;
             }
@@ -130,9 +127,9 @@ public class EmployeeRepository {
     }
 
     /**
-     * Maze zamestnance.
+     * Maze otazku.
      * 
-     * @param id id mazaneho zamestnance
+     * @param id id mazane otazky
      * @return true, pokud vse skonci v poradku; false v opacnem pripade
      */
     public boolean delete(int id) {
@@ -140,12 +137,12 @@ public class EmployeeRepository {
         
         if (id > 0) {
             // vyhleda zamestnance
-            Employee employee = (Employee) session.get(Employee.class, id);
+            Category category = (Category) session.get(Category.class, id);
             
             // pokud neni null, smaze se
-            if (employee != null && validateEmployee(employee)) {
+            if (category != null && validateCategory(category)) {
                 session.beginTransaction();
-                session.delete(employee);
+                session.delete(category);
                 session.getTransaction().commit();
                 value = true;
             }
@@ -155,7 +152,7 @@ public class EmployeeRepository {
     }
     
     /**
-     * Metoda nachazi volne id pro zamestnance.
+     * Metoda nachazi volne id pro Category.
      * 
      * @return volne id
      */
@@ -163,7 +160,7 @@ public class EmployeeRepository {
         session.beginTransaction();
 
         // setridene id do listu
-        Criteria criteria = session.createCriteria(Employee.class).setProjection(Projections.property("idEmployee")).addOrder(Order.desc("idEmployee"));
+        Criteria criteria = session.createCriteria(Category.class).setProjection(Projections.property("idCategory")).addOrder(Order.desc("idCategory"));
         
         List<Integer> list = criteria.list();
         
@@ -196,17 +193,13 @@ public class EmployeeRepository {
     }
     
     /**
-     * Pomocna metoda, ktera validuje zamestnance. 
-     * Kontroluje neprazdnost udaju zamestnance, pokud je jeden prvek prazdny, vrati se false.
+     * Pomocna metoda, ktera validuje category. 
+     * Kontroluje neprazdnost udaju category, pokud je jeden prvek prazdny, vrati se false.
      * 
-     * @param employee zamestnanec
+     * @param category otazka
      * @return true, pokud je validni; jinak false
      */
-    private boolean validateEmployee(Employee employee) {
-        return (employee.getBirthNumber() != null 
-                && employee.getFirstName() != null
-                && employee.getLastName() != null
-                && employee.getIdEmployee() > 0 
-                && employee.getRole() != null);
+    private boolean validateCategory(Category category) {
+        return (category.getDescription() != null);
     }
 }

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 14.1.2017 17:28:00 by Hibernate Tools 4.3.1 -->
+<hibernate-mapping>
+  <class catalog="xkovj41" name="model.Employee" optimistic-lock="version" table="Employee">
+    <id name="idEmployee" type="int">
+      <column name="IdEmployee"/>
+      <generator class="assigned"/>
+    </id>
+    <property name="firstName" type="string">
+      <column length="1024" name="FirstName" not-null="true"/>
+    </property>
+    <property name="lastName" type="string">
+      <column length="1024" name="LastName" not-null="true"/>
+    </property>
+    <property name="birthNumber" type="string">
+      <column length="1024" name="BirthNumber" not-null="true"/>
+    </property>
+    <property name="role" type="string">
+      <column length="1024" name="Role" not-null="true"/>
+    </property>
+    <set fetch="select" inverse="true" lazy="true" name="evaluations" table="Evaluation">
+      <key>
+        <column name="IdEmployee" not-null="true"/>
+      </key>
+      <one-to-many class="model.Evaluation"/>
+    </set>
+  </class>
+</hibernate-mapping>

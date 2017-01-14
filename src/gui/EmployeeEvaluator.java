@@ -35,10 +35,10 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import models.Category;
-import models.Employee;
-import models.Evaluation;
-import repositories.EmployeeRepository;
+import model.Category;
+import model.Employee;
+import model.Evaluation;
+import repository.EmployeeRepository;
 
 /**
  *
