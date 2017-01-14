@@ -22,6 +22,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
@@ -129,7 +130,7 @@ public class EmployeeEvaluator extends Application {
         newEmployeeBtn.setText("Nový zamestnanec");
         newEmployeeBtn.setOnAction((ActionEvent event) -> {
             System.out.println("novýzamestnanec!");
-            root.setCenter(newEmployeeScreen);
+            root.setCenter(newEmployee());
         });
         newEmployeeBtn.setPrefWidth(200);
         
@@ -182,22 +183,10 @@ public class EmployeeEvaluator extends Application {
         
         
         
-        //keď budem mať prístup k DB 
+        
         refreshEmployeeTable();
-//        
+        
 
-//        ObservableList<Employee> ol = FXCollections.observableArrayList();
-//        ol.add(new Employee(0, "Andrej", "Hopko", "1234567890", "úrad práce"));
-//        ol.add(new Employee(1, "Anton", "Buday", "940912/1234", "všeznalec"));
-//        allEmployeesScreen.setItems(ol);
-//        TableColumn<Employee,String> firstNameCol = new TableColumn<Employee,String>("First Name");
-//        firstNameCol.setCellValueFactory(new PropertyValueFactory("firstName"));
-//        TableColumn<Employee,String> lastNameCol = new TableColumn<Employee,String>("Last Name");
-//        lastNameCol.setCellValueFactory(new PropertyValueFactory("lastName"));
-//        TableColumn<Employee,String> birthNumberCol = new TableColumn<Employee,String>("Birth Number");
-//        birthNumberCol.setCellValueFactory(new PropertyValueFactory("birthNumber"));
-//        TableColumn<Employee,String> roleCol = new TableColumn<Employee,String>("Role");
-//        roleCol.setCellValueFactory(new PropertyValueFactory("role"));
 
         
         
@@ -214,27 +203,9 @@ public class EmployeeEvaluator extends Application {
         return row ;
         });
   
-        newEmployeeScreen = new GridPane();
-        newEmployeeScreen.setAlignment(Pos.CENTER);
-        newEmployeeScreen.setHgap(10);
-        newEmployeeScreen.setVgap(10);
-        newEmployeeScreen.setPadding(new Insets(25, 25, 25, 25));
-
-        Text scenetitle1 = new Text("New Employee Screen");
-        scenetitle1.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
-        newEmployeeScreen.add(scenetitle1, 0, 0, 2, 1);
         
         
         
-        editEmployeeScreen = new GridPane();
-        editEmployeeScreen.setAlignment(Pos.CENTER);
-        editEmployeeScreen.setHgap(10);
-        editEmployeeScreen.setVgap(10);
-        editEmployeeScreen.setPadding(new Insets(25, 25, 25, 25));
-
-        Text scenetitle2 = new Text("Edit Employee Screen");
-        scenetitle2.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
-        editEmployeeScreen.add(scenetitle2, 0, 0, 2, 1);
         
         
         deleteEmployeeScreen = new GridPane();
@@ -244,7 +215,7 @@ public class EmployeeEvaluator extends Application {
         deleteEmployeeScreen.setPadding(new Insets(25, 25, 25, 25));
 
         Text scenetitle3 = new Text("delete Employee Screen");
-        scenetitle2.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
+        scenetitle3.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
         deleteEmployeeScreen.add(scenetitle3, 0, 0, 2, 1);
         
         
@@ -261,7 +232,7 @@ public class EmployeeEvaluator extends Application {
                 editEmployeeBtn.setOnAction((ActionEvent event) -> {
                     System.out.println("upraviťzamestnanca!");
                     
-                    root.setCenter(editEmployeeScreen);
+                    root.setCenter(editEmployee(employee));
                 });
                 editEmployeeBtn.setPrefWidth(200);
 
@@ -370,6 +341,113 @@ public class EmployeeEvaluator extends Application {
         return detailScreen;
     }
     
+    private Pane editEmployee(Employee employee){
+        editEmployeeScreen = new GridPane();
+        editEmployeeScreen.setAlignment(Pos.CENTER);
+        editEmployeeScreen.setHgap(10);
+        editEmployeeScreen.setVgap(10);
+        editEmployeeScreen.setPadding(new Insets(25, 25, 25, 25));
+
+        Text scenetitle2 = new Text("Edit Employee Screen");
+        scenetitle2.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
+        editEmployeeScreen.add(scenetitle2, 0, 0, 2, 1);
+        Label firstName = new Label("First Name:");
+        editEmployeeScreen.add(firstName, 0, 1);
+
+        TextField firstNameField = new TextField();
+        firstNameField.setText(employee.getFirstName());
+        editEmployeeScreen.add(firstNameField, 1, 1);
+
+        Label lastName = new Label("Last Name:");
+        editEmployeeScreen.add(lastName, 0, 2);
+
+        TextField lastNameField = new TextField();
+        lastNameField.setText(employee.getLastName());
+        editEmployeeScreen.add(lastNameField, 1, 2);
+        
+        Label birthNumber = new Label("Birth Number:");
+        editEmployeeScreen.add(birthNumber, 0, 3);
+
+        TextField birthNumberField = new TextField();
+        birthNumberField.setText(employee.getBirthNumber());
+        editEmployeeScreen.add(birthNumberField, 1, 3);
+
+        Label role = new Label("Role:");
+        editEmployeeScreen.add(role, 0, 4);
+
+        TextField roleField = new TextField();
+        roleField.setText(employee.getRole());
+        editEmployeeScreen.add(roleField, 1, 4);        
+        
+        //int formerId = employee.getIdEmployee();
+        
+        Button editEmployeeBtn = new Button("Uložiť zmeny");
+        editEmployeeBtn.setOnAction((ActionEvent event) -> {
+                    System.out.println("vymazaťzame");
+                    
+                    final Employee newEmployee = new Employee(employee.getIdEmployee(),firstNameField.getText(),
+                            lastNameField.getText(),birthNumberField.getText(),
+                            roleField.getText());
+                    //er.edit(newEmployee); //hádže NonUniqueObjectException
+                    refreshEmployeeTable();
+                    root.setCenter(allEmployeesScreen);
+                });
+        editEmployeeScreen.add(editEmployeeBtn,1,5);
+        return editEmployeeScreen;
+    }   
+    
+    private Pane newEmployee(){
+        newEmployeeScreen = new GridPane();
+        newEmployeeScreen.setAlignment(Pos.CENTER);
+        newEmployeeScreen.setHgap(10);
+        newEmployeeScreen.setVgap(10);
+        newEmployeeScreen.setPadding(new Insets(25, 25, 25, 25));
+
+        
+        Text scenetitle2 = new Text("New Employee Screen");
+        scenetitle2.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
+        newEmployeeScreen.add(scenetitle2, 0, 0, 2, 1);
+        Label firstName = new Label("First Name:");
+        newEmployeeScreen.add(firstName, 0, 1);
+
+        TextField firstNameField = new TextField();
+        newEmployeeScreen.add(firstNameField, 1, 1);
+
+        Label lastName = new Label("Last Name:");
+        newEmployeeScreen.add(lastName, 0, 2);
+
+        TextField lastNameField = new TextField();
+        newEmployeeScreen.add(lastNameField, 1, 2);
+        
+        Label birthNumber = new Label("Birth Number:");
+        newEmployeeScreen.add(birthNumber, 0, 3);
+
+        TextField birthNumberField = new TextField();
+        newEmployeeScreen.add(birthNumberField, 1, 3);
+
+        Label role = new Label("Role:");
+        newEmployeeScreen.add(role, 0, 4);
+
+        TextField roleField = new TextField();
+        newEmployeeScreen.add(roleField, 1, 4);        
+        
+        //int formerId = employee.getIdEmployee();
+        
+        Button editEmployeeBtn = new Button("Uložiť zzamestnanca");
+        editEmployeeBtn.setOnAction((ActionEvent event) -> {
+                    System.out.println("uložiťzame");
+                    
+                    final Employee newEmployee = new Employee(er.freeId(),firstNameField.getText(),
+                            lastNameField.getText(),birthNumberField.getText(),
+                            roleField.getText());
+                    er.create(newEmployee); 
+                    refreshEmployeeTable();
+                    root.setCenter(allEmployeesScreen);
+                });
+        newEmployeeScreen.add(editEmployeeBtn,1,5);
+        
+        return newEmployeeScreen;
+    }
     public void refreshEmployeeTable(){
         allEmployeesScreen.setItems(FXCollections.observableArrayList(er.getAllEmployees()));
         TableColumn<Employee,String> firstNameCol = new TableColumn<Employee,String>("First Name");
