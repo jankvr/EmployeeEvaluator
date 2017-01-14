@@ -27,6 +27,7 @@ public class Evaluation  implements java.io.Serializable {
         this.idEvaluation = idEvaluation;
         this.employee = employee;
         this.plannedDate = plannedDate;
+        
     }
     public Evaluation(int idEvaluation, Employee employee, Date evaluationDate, Date plannedDate, String stornoReason, Set evaluationItems) {
        this.idEvaluation = idEvaluation;
