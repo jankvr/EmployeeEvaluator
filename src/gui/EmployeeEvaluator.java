@@ -318,7 +318,7 @@ public class EmployeeEvaluator extends Application {
         return detailScreen;
     }
     
-    private Pane evaluationDetail(Evaluation evaluation,TableView<Evaluation> evaluationTable){
+    private Pane evaluationDetail(Evaluation evaluation,TableView<Evaluation> evaluationTable, Employee employee){
         VBox detailScreen = new VBox();
             HBox detailScreenButtons = new HBox();
                 Button editEvaluationBtn = new Button();
@@ -326,7 +326,7 @@ public class EmployeeEvaluator extends Application {
                 editEvaluationBtn.setOnAction((ActionEvent event) -> {
                     System.out.println("upraviťpohovor!");
                     
-                    root.setCenter(editEvaluation(evaluation));
+                    root.setCenter(editEvaluation(evaluation,employee));
                 });
                 editEvaluationBtn.setPrefWidth(200);
 
@@ -656,9 +656,50 @@ public class EmployeeEvaluator extends Application {
         return newEvaluationScreen;
     }
     
-    private Pane editEvaluation(Evaluation evaluation){
-        //TODO
-        return null;
+    private Pane editEvaluation(Evaluation evaluation, Employee employee){
+        
+        editEvaluationScreen = new GridPane();
+        editEvaluationScreen.setAlignment(Pos.CENTER);
+        editEvaluationScreen.setHgap(10);
+        editEvaluationScreen.setVgap(10);
+        editEvaluationScreen.setPadding(new Insets(25, 25, 25, 25));
+
+        
+        Text scenetitle2 = new Text("New Evaluation Screen");
+        scenetitle2.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
+        editEvaluationScreen.add(scenetitle2, 0, 0, 2, 1);
+        Label plannedDate = new Label("Planned Date:");
+        editEvaluationScreen.add(plannedDate, 0, 1);
+
+        DatePicker plannedDateField = new DatePicker();
+        Date previousDate = evaluation.getPlannedDate();
+        LocalDate previousLocalDate = new java.sql.Date(previousDate.getTime()).toLocalDate();
+        plannedDateField.setValue(previousLocalDate);
+        editEvaluationScreen.add(plannedDateField, 1, 1);
+
+        
+        
+               
+        
+        //int formerId = employee.getIdEmployee();
+        
+        Button newEvaluationBtn = new Button("Uložiť pohovor");
+        newEvaluationBtn.setOnAction((ActionEvent event) -> {
+                    System.out.println("uložiťotázkuz");
+                    LocalDate localDate = plannedDateField.getValue();
+                    Instant instant = Instant.from(localDate.atStartOfDay(ZoneId.systemDefault()));
+                    Date date = Date.from(instant);
+                    final Evaluation newEvaluation = new Evaluation(evaluation.getIdEvaluation(),employee,date);
+                    evalr.edit(newEvaluation); 
+                    employee.getEvaluations().remove(evaluation);//questionable
+                    employee.getEvaluations().add(newEvaluation);//questionable
+                    refreshEvaluationTable(employee);
+                    root.setCenter(employeeDetail(employee));
+                });
+        editEvaluationScreen.add(newEvaluationBtn,1,3);
+        
+        return editEvaluationScreen;        
+       
     }
     
     public void refreshEmployeeTable(){
@@ -698,7 +739,7 @@ public class EmployeeEvaluator extends Application {
                 if (event.getClickCount() == 1 && (! row.isEmpty()) ) {
                     Evaluation rowData = row.getItem();
                     System.out.println("zoberazujem detail zamestnanca"+rowData);
-                    root.setCenter(evaluationDetail(rowData,evaluationTable));
+                    root.setCenter(evaluationDetail(rowData,evaluationTable,employee));
                 }
             });
             return row ;
