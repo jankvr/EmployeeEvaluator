@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -44,6 +46,7 @@ import javafx.stage.WindowEvent;
 import model.Category;
 import model.Employee;
 import model.Evaluation;
+import model.EvaluationItem;
 import repository.CategoryRepository;
 import repository.EmployeeRepository;
 import repository.EvaluationItemRepository;
@@ -66,6 +69,7 @@ public class EmployeeEvaluator extends Application {
     GridPane newCategoryScreen;
     GridPane editCategoryScreen;
     GridPane deleteCategoryScreen;
+    GridPane editEvaluationItemsScreen;
     EmployeeRepository er;
     CategoryRepository cr;
     EvaluationItemRepository eir;
@@ -340,8 +344,18 @@ public class EmployeeEvaluator extends Application {
                     root.setCenter(allEmployeesScreen);
                 });
                 deleteEvaluationBtn.setPrefWidth(200);  
+                
+                Button editItemsBtn = new Button();
+                editItemsBtn.setText("Upraviť položky");
+                editItemsBtn.setOnAction((ActionEvent event) -> {
+                    System.out.println("Upraviť položky");
+
+                    root.setCenter(editEvaluationItems(evaluation));
+                });
+                editItemsBtn.setPrefWidth(200);  
             detailScreenButtons.getChildren().add(editEvaluationBtn);
             detailScreenButtons.getChildren().add(deleteEvaluationBtn);
+            detailScreenButtons.getChildren().add(editItemsBtn);
         
             VBox detailScreenData = new VBox();
             detailScreenData.getChildren().add(new Text("Evaluation date: "+evaluation.getEvaluationDate()));
@@ -350,14 +364,17 @@ public class EmployeeEvaluator extends Application {
             
 
             
-            TableView<Category> categoryTable = new TableView<Category>();
-//            categoryTable.setItems(FXCollections.observableArrayList(evaluation.getEvaluationItems()));
-//            TableColumn<Evaluation,String> evaluationDateCol = new TableColumn<Evaluation,String>("Evaluation date");
+            TableView<Category> evaluationItemTable = new TableView<Category>();
+            evaluationItemTable.setItems(FXCollections.observableArrayList(evaluation.getEvaluationItems()));
+//            TableColumn<EvaluationItem,String> evaluationDateCol = new TableColumn<EvaluationItem,String>("Evaluation date");
 //            evaluationDateCol.setCellValueFactory(new PropertyValueFactory("evaluationDate"));
-//            TableColumn<Employee,String> plannedDateCol = new TableColumn<Employee,String>("Planned Date");
+//            TableColumn<EvaluationItem,String> plannedDateCol = new TableColumn<EvaluationItem,String>("Planned Date");
 //            plannedDateCol.setCellValueFactory(new PropertyValueFactory("plannedDate"));
-//            TableColumn<Employee,String> stornoReasonCol = new TableColumn<Employee,String>("Storno Reason");
-//            stornoReasonCol.setCellValueFactory(new PropertyValueFactory("stornoReason"));
+            TableColumn<EvaluationItem,String> score = new TableColumn<EvaluationItem,String>("score");
+            score.setCellValueFactory(new PropertyValueFactory("score"));
+            TableColumn<EvaluationItem,String> commentary = new TableColumn<EvaluationItem,String>("Storno Reason");
+            commentary.setCellValueFactory(new PropertyValueFactory("commentary"));
+            //nebude klikateľné, budú sa editovať v samotstatnom okne s buttnom
 //            evaluationTable.setRowFactory( tv -> {
 //            TableRow<Evaluation> row = new TableRow<>();
 //            row.setOnMouseClicked(event -> {
@@ -365,7 +382,7 @@ public class EmployeeEvaluator extends Application {
 //                    //zmeniť screen na detail zamestnanca
 //                    Evaluation rowData = row.getItem();
 //                    System.out.println("zoberazujem detail zamestnanca"+rowData);
-//                    root.setCenter(evalautionDetail(rowData));
+//                    root.setCenter(evalautionItemDetail(rowData));
 //                }
 //            });
 //            return row ;
@@ -373,7 +390,7 @@ public class EmployeeEvaluator extends Application {
             
         detailScreen.getChildren().add(detailScreenButtons);
         detailScreen.getChildren().add(detailScreenData);
-        detailScreen.getChildren().add(categoryTable);
+        detailScreen.getChildren().add(evaluationItemTable);
         return detailScreen;
     }
     
@@ -702,6 +719,123 @@ public class EmployeeEvaluator extends Application {
        
     }
     
+    private Pane editEvaluationItems(Evaluation evaluation){
+        editEvaluationItemsScreen = new GridPane();
+        editEvaluationItemsScreen.setAlignment(Pos.CENTER);
+        editEvaluationItemsScreen.setHgap(10);
+        editEvaluationItemsScreen.setVgap(10);
+        editEvaluationItemsScreen.setPadding(new Insets(25, 25, 25, 25));
+
+        Text scenetitle2 = new Text("Zodpovedané otázky:");
+        scenetitle2.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
+        editEvaluationItemsScreen.add(scenetitle2, 0, 0, 2, 1);
+        
+        List<Category> categoryList = cr.getAllCategories();
+        int i=1;
+//        
+
+        List<EvaluationItem> editedEvaluationItemList = new ArrayList<EvaluationItem>();
+        List<ComboBox> editedComboBoxesList = new ArrayList<ComboBox>();
+        List<TextField> editedTextFieldsList = new ArrayList<TextField>();
+        List<Category> previouslyUnansweredCategoriesList = new ArrayList<Category>();
+        
+//        editedComboBoxesList.add(0, null);
+//        editedEvaluationItemList.add(0, null);
+//        editedTextFieldsList.add(0, null);
+//        previouslyUnansweredCategoriesList.add(0, null);
+        
+        Set<Category> answeredCategories = new HashSet<Category>(); 
+        Set<EvaluationItem> evaluationItemList = evaluation.getEvaluationItems();   
+        for(EvaluationItem ei:evaluationItemList){
+            editedEvaluationItemList.add(ei);
+            answeredCategories.add(ei.getCategory());
+             Label categoryDescription = new Label(ei.getCategory().getDescription());
+            editEvaluationItemsScreen.add(categoryDescription,0,i);
+            Label categoryCoefficient = new Label(Integer.toString(ei.getCategory().getCoefficient()));
+            editEvaluationItemsScreen.add(categoryCoefficient,1,i);
+            ObservableList<Integer> options = 
+                FXCollections.observableArrayList(
+                    1,2,3,4,5
+                );
+            ComboBox scoreBox = new ComboBox(options);
+            editedComboBoxesList.add(scoreBox);
+            scoreBox.setValue(ei.getScore());
+            TextField commentField = new TextField();
+            editedTextFieldsList.add(commentField);
+            commentField.setText(ei.getCommentary());
+            previouslyUnansweredCategoriesList.add(null);
+//            EvaluationItem eiWithScore = new EvaluationItem(0, c,evaluation, 0);
+            
+            
+            editEvaluationItemsScreen.add(scoreBox,2,i);
+            editEvaluationItemsScreen.add(commentField,3,i);
+            i++;
+        }
+//        editedComboBoxesList.add(null);
+//        editedEvaluationItemList.add(null);
+//        editedTextFieldsList.add(null);
+//        previouslyUnansweredCategoriesList.add(null);
+        Text scenetitle3 = new Text("Nezodpovedané otázky:");
+        scenetitle3.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
+        editEvaluationItemsScreen.add(scenetitle3, 0, i, 2, 1);
+        i++;
+//        editedComboBoxesList.add(null);
+//        editedEvaluationItemList.add(null);
+//        editedTextFieldsList.add(null);
+//        previouslyUnansweredCategoriesList.add(null);
+        for(Category c : categoryList){
+            if(/*!answeredCategories.contains(c)*/!checkCategoryInList(answeredCategories, c)){    
+                previouslyUnansweredCategoriesList.add(c);
+                Label categoryDescription = new Label(c.getDescription());
+                editEvaluationItemsScreen.add(categoryDescription,0,i);
+                Label categoryCoefficient = new Label(Integer.toString(c.getCoefficient()));
+                editEvaluationItemsScreen.add(categoryCoefficient,1,i);
+                ObservableList<Integer> options = 
+                    FXCollections.observableArrayList(
+                        1,2,3,4,5
+                    );
+                ComboBox scoreBox = new ComboBox(options);
+                editedComboBoxesList.add(scoreBox);
+                TextField commentField = new TextField();
+                editedTextFieldsList.add(commentField);
+
+                editEvaluationItemsScreen.add(scoreBox,2,i);
+                editEvaluationItemsScreen.add(commentField,3,i);
+                i++;
+            }
+        }
+        
+        
+        Button saveEvaluationItemsBtn = new Button("Uložiť položky pohovorov");
+        saveEvaluationItemsBtn.setOnAction((ActionEvent event) -> {
+                    System.out.println("uložiťotázkuz");
+                    
+                    
+                    
+                    
+                    //editovanie zodpovednaých otázok:
+                    for (int j=0; j<evaluationItemList.size();j++){
+                        EvaluationItem formerEI = editedEvaluationItemList.get(j);
+                        final EvaluationItem newEvaluationItem = new EvaluationItem(formerEI.getIdEvaluationItem(),formerEI.getCategory(),evaluation,(int)editedComboBoxesList.get(j).getValue());
+                        if(editedTextFieldsList.get(j).getText()!=null){
+                            newEvaluationItem.setCommentary(editedTextFieldsList.get(j).getText());
+                        }
+                        eir.edit(newEvaluationItem); 
+                    }
+                    
+                    //ukladanie novopridaných otázok
+                    for (int k=evaluationItemList.size()/*+1*/; k<previouslyUnansweredCategoriesList.size()/*+1*/;k++){
+                        final EvaluationItem newEvaluationItem = new EvaluationItem(eir.freeId(),previouslyUnansweredCategoriesList.get(k),evaluation,(int)editedComboBoxesList.get(k).getValue());
+                        if(!editedTextFieldsList.get(k).getText().isEmpty()){newEvaluationItem.setCommentary(editedTextFieldsList.get(k).getText());}
+                        eir.create(newEvaluationItem); 
+                        
+                    }
+//                    
+                });
+        editEvaluationItemsScreen.add(saveEvaluationItemsBtn,1,i);
+        return editEvaluationItemsScreen;
+    }
+    
     public void refreshEmployeeTable(){
         allEmployeesScreen.setItems(FXCollections.observableArrayList(er.getAllEmployees()));
         TableColumn<Employee,String> firstNameCol = new TableColumn<Employee,String>("First Name");
@@ -748,6 +882,14 @@ public class EmployeeEvaluator extends Application {
         return evaluationTable;
     }
     
+    private boolean checkCategoryInList(Set<Category> answeredCategories, Category category){
+            for(Category ac:answeredCategories){
+                if(ac.getDescription().equals(category.getDescription())&&ac.getCoefficient()==(category.getCoefficient())){
+                    return true;
+                }
+            }
+        return false;
+    }
     /**
      * @param args the command line arguments
      */
