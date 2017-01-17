@@ -38,6 +38,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
@@ -307,6 +308,7 @@ public class EmployeeEvaluator extends Application {
                         Scene gridScene = new Scene(grid, 300, 275);
                         stage.setScene(gridScene);
                         stage.show();
+                        er.rollBack();
                     }
                 });
                 deleteEmployeeBtn.setPrefWidth(200);  
@@ -373,6 +375,7 @@ public class EmployeeEvaluator extends Application {
                         Scene gridScene = new Scene(grid, 300, 275);
                         stage.setScene(gridScene);
                         stage.show();
+                        er.rollBack();
                     }
                 });
                 stornoEvaluationBtn.setPrefWidth(200);  
@@ -386,6 +389,7 @@ public class EmployeeEvaluator extends Application {
                         employee.getEvaluations().remove(evaluation);
                         refreshEvaluationTable(employee);
                         root.setCenter(employeeDetail(employee));
+                        
                     } catch(ConstraintViolationException e){
                         Stage stage = new Stage();
                         GridPane grid = new GridPane();
@@ -399,6 +403,7 @@ public class EmployeeEvaluator extends Application {
                         Scene gridScene = new Scene(grid, 300, 275);
                         stage.setScene(gridScene);
                         stage.show();
+                        evalr.rollBack();
                     }
                 });
                 deleteEvaluationBtn.setPrefWidth(200);  
@@ -438,7 +443,7 @@ public class EmployeeEvaluator extends Application {
         editEmployeeScreen.setVgap(10);
         editEmployeeScreen.setPadding(new Insets(25, 25, 25, 25));
 
-        Text scenetitle2 = new Text("Edit Employee Screen");
+        Text scenetitle2 = new Text("Upravovanie zamestnanca");
         scenetitle2.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
         editEmployeeScreen.add(scenetitle2, 0, 0, 2, 1);
         Label firstName = new Label("First Name:");
@@ -496,28 +501,28 @@ public class EmployeeEvaluator extends Application {
         newEmployeeScreen.setPadding(new Insets(25, 25, 25, 25));
 
         
-        Text scenetitle2 = new Text("New Employee Screen");
+        Text scenetitle2 = new Text("Pridávanie zamestnanca");
         scenetitle2.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
         newEmployeeScreen.add(scenetitle2, 0, 0, 2, 1);
-        Label firstName = new Label("First Name:");
+        Label firstName = new Label("Krstné meno:");
         newEmployeeScreen.add(firstName, 0, 1);
 
         TextField firstNameField = new TextField();
         newEmployeeScreen.add(firstNameField, 1, 1);
 
-        Label lastName = new Label("Last Name:");
+        Label lastName = new Label("Priezvisko:");
         newEmployeeScreen.add(lastName, 0, 2);
 
         TextField lastNameField = new TextField();
         newEmployeeScreen.add(lastNameField, 1, 2);
         
-        Label birthNumber = new Label("Birth Number:");
+        Label birthNumber = new Label("Rodné číslo:");
         newEmployeeScreen.add(birthNumber, 0, 3);
 
         TextField birthNumberField = new TextField();
         newEmployeeScreen.add(birthNumberField, 1, 3);
 
-        Label role = new Label("Role:");
+        Label role = new Label("Úloha:");
         newEmployeeScreen.add(role, 0, 4);
 
         TextField roleField = new TextField();
@@ -545,14 +550,14 @@ public class EmployeeEvaluator extends Application {
         private Pane categoryDetail(Category category){
         VBox detailScreen = new VBox();
             HBox detailScreenButtons = new HBox();
-                Button editCategoryBtn = new Button();
-                editCategoryBtn.setText("Upraviť otázku");
-                editCategoryBtn.setOnAction((ActionEvent event) -> {
-                    System.out.println("upraviťzCategory!");
-                    
-                    root.setCenter(editCategory(category));
-                });
-                editCategoryBtn.setPrefWidth(200);
+//                Button editCategoryBtn = new Button();
+//                editCategoryBtn.setText("Upraviť otázku");
+//                editCategoryBtn.setOnAction((ActionEvent event) -> {
+//                    System.out.println("upraviťzCategory!");
+//                    
+//                    root.setCenter(editCategory(category));
+//                });
+//                editCategoryBtn.setPrefWidth(200);
 
                 Button deleteCategoryBtn = new Button();
                 deleteCategoryBtn.setText("Vymazať otázku");
@@ -570,15 +575,16 @@ public class EmployeeEvaluator extends Application {
                         grid.setVgap(10);
                         grid.setPadding(new Insets(25, 25, 25, 25));
                         grid.add(new Text("Otázka sa používa v pohovoroch."),0,1);
-                        grid.add(new Text("Ak ju chcete zmazať, musíte zmazať pohovory, kde sa vyskytuje."),0,2);
+                        grid.add(new Text("Ak ju chcete zmazať, musíte zmazať pohovory, \nkde sa vyskytuje."),0,2);
                          
                         Scene gridScene = new Scene(grid, 300, 275);
                         stage.setScene(gridScene);
                         stage.show();
+                        cr.rollBack();
                     }
                 });
                 deleteCategoryBtn.setPrefWidth(200);  
-            detailScreenButtons.getChildren().add(editCategoryBtn);
+//            detailScreenButtons.getChildren().add(editCategoryBtn);
             detailScreenButtons.getChildren().add(deleteCategoryBtn);
         
             VBox detailScreenData = new VBox();
@@ -602,16 +608,16 @@ public class EmployeeEvaluator extends Application {
         newCategoryScreen.setPadding(new Insets(25, 25, 25, 25));
 
         
-        Text scenetitle2 = new Text("New Category Screen");
+        Text scenetitle2 = new Text("Pridávanie otázky");
         scenetitle2.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
         newCategoryScreen.add(scenetitle2, 0, 0, 2, 1);
-        Label description = new Label("Description:");
+        Label description = new Label("Popis:");
         newCategoryScreen.add(description, 0, 1);
 
         TextField descriptionField = new TextField();
         newCategoryScreen.add(descriptionField, 1, 1);
 
-        Label coefficient = new Label("Coefficient:");
+        Label coefficient = new Label("Koeficient:");
         newCategoryScreen.add(coefficient, 0, 2);
 
         ObservableList<Integer> options = 
@@ -640,52 +646,6 @@ public class EmployeeEvaluator extends Application {
         return newCategoryScreen;
     }
     
-    private Pane editCategory(Category category){
-        editCategoryScreen = new GridPane();
-        editCategoryScreen.setAlignment(Pos.CENTER);
-        editCategoryScreen.setHgap(10);
-        editCategoryScreen.setVgap(10);
-        editCategoryScreen.setPadding(new Insets(25, 25, 25, 25));
-
-        Text scenetitle2 = new Text("Edit Employee Screen");
-        scenetitle2.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
-        editCategoryScreen.add(scenetitle2, 0, 0, 2, 1);
-        
-        Label description = new Label("Description:");
-        editCategoryScreen.add(description, 0, 1);
-
-        TextField descriptionField = new TextField();
-        descriptionField.setText(category.getDescription());
-        editCategoryScreen.add(descriptionField, 1, 1);
-
-        Label coefficient = new Label("Coefficient:");
-        editCategoryScreen.add(coefficient, 0, 2);
-
-        ObservableList<Integer> options = 
-        FXCollections.observableArrayList(
-            0,1,2,3,4,5,6,7,8,9,10
-        );
-        ComboBox coefficientField = new ComboBox(options);
-        coefficientField.setValue(category.getCoefficient());
-        editCategoryScreen.add(coefficientField, 1, 2);
-        
-              
-        
-        //int formerId = employee.getIdEmployee();
-        
-        Button editcategoryBtn = new Button("Uložiť zmeny");
-        editcategoryBtn.setOnAction((ActionEvent event) -> {
-                    System.out.println("vymazaťzame");
-                    
-                    final Category newCategory = new Category(category.getIdCategory(),descriptionField.getText(),
-                            (int)coefficientField.getValue());
-                    cr.edit(newCategory); 
-                    refreshCategoryTable();
-                    root.setCenter(allCategoriesScreen);
-                });
-        editCategoryScreen.add(editcategoryBtn,1,5);
-        return editCategoryScreen;
-    }   
     
     private Pane newEvaluation(Employee employee){
         newEvaluationScreen = new GridPane();
@@ -695,10 +655,10 @@ public class EmployeeEvaluator extends Application {
         newEvaluationScreen.setPadding(new Insets(25, 25, 25, 25));
 
         
-        Text scenetitle2 = new Text("New Evaluation Screen");
+        Text scenetitle2 = new Text("Pridávanie pohovoru");
         scenetitle2.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
         newEvaluationScreen.add(scenetitle2, 0, 0, 2, 1);
-        Label plannedDate = new Label("Planned Date:");
+        Label plannedDate = new Label("Plánovaný dátum:");
         newEvaluationScreen.add(plannedDate, 0, 1);
 
         DatePicker plannedDateField = new DatePicker();
@@ -736,10 +696,10 @@ public class EmployeeEvaluator extends Application {
         editEvaluationScreen.setPadding(new Insets(25, 25, 25, 25));
         
         
-        Text scenetitle2 = new Text("New Evaluation Screen");
+        Text scenetitle2 = new Text("Nový pohovor");
         scenetitle2.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
         editEvaluationScreen.add(scenetitle2, 0, 0, 2, 1);
-        Label plannedDate = new Label("Planned Date:");
+        Label plannedDate = new Label("Plánovaný dátum:");
         editEvaluationScreen.add(plannedDate, 0, 1);
         
         DatePicker plannedDateField = new DatePicker();
@@ -748,7 +708,7 @@ public class EmployeeEvaluator extends Application {
         plannedDateField.setValue(previousLocalDate);
         editEvaluationScreen.add(plannedDateField, 1, 1);
         
-        Label evaluationDate = new Label("Evaluation Date:");
+        Label evaluationDate = new Label("Dátum pohovoru:");
         editEvaluationScreen.add(evaluationDate, 0, 2);
 
         DatePicker evaluationDateField = new DatePicker();
@@ -812,10 +772,10 @@ public class EmployeeEvaluator extends Application {
         stornoEvaluation.setPadding(new Insets(25, 25, 25, 25));
 
         
-        Text scenetitle2 = new Text("New Evaluation Screen");
+        Text scenetitle2 = new Text("Stornovanie pohovoru");
         scenetitle2.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
         stornoEvaluation.add(scenetitle2, 0, 0, 2, 1);
-        Label plannedDate = new Label("Evaluation Date:");
+        Label plannedDate = new Label("Dátum pohovoru:");
         stornoEvaluation.add(plannedDate, 0, 1);
 
         DatePicker evaluationDateField = new DatePicker();
@@ -943,15 +903,20 @@ public class EmployeeEvaluator extends Application {
                             newEvaluationItem.setCommentary(editedTextFieldsList.get(j).getText());
                         }
                         eir.edit(newEvaluationItem); 
+                        evaluation.getEvaluationItems().remove(formerEI);
+                        evaluation.getEvaluationItems().add(newEvaluationItem);
                     }
                     
                     //ukladanie novopridaných otázok
                     for (int k=evaluationItemList.size()/*+1*/; k<previouslyUnansweredCategoriesList.size()/*+1*/;k++){
-                        final EvaluationItem newEvaluationItem = new EvaluationItem(eir.freeId(),previouslyUnansweredCategoriesList.get(k),evaluation,(int)editedComboBoxesList.get(k).getValue());
-                        if(!editedTextFieldsList.get(k).getText().isEmpty()){newEvaluationItem.setCommentary(editedTextFieldsList.get(k).getText());}
-                        eir.create(newEvaluationItem); 
-                        
+                        if(editedComboBoxesList.get(k).getValue()!=null){
+                            final EvaluationItem newEvaluationItem = new EvaluationItem(eir.freeId(),previouslyUnansweredCategoriesList.get(k),evaluation,(int)editedComboBoxesList.get(k).getValue());
+                            if(!editedTextFieldsList.get(k).getText().isEmpty()){newEvaluationItem.setCommentary(editedTextFieldsList.get(k).getText());}
+                            eir.create(newEvaluationItem);                             
+                            evaluation.getEvaluationItems().add(newEvaluationItem);
+                        }
                     }
+                    root.setCenter(employeeDetail(evaluation.getEmployee()));
 //                    
                 });
         editEvaluationItemsScreen.add(saveEvaluationItemsBtn,1,i);
@@ -988,6 +953,14 @@ public class EmployeeEvaluator extends Application {
             deleteButton.setOnAction((ActionEvent event) -> {
                 System.out.println("vymazať evaluationitem");
                 eir.delete(ei.getIdEvaluationItem());
+                //vyškrtnúť a refreshnúť
+                categoryDescription.setTextFill(Color.RED);
+                categoryCoefficient.setTextFill(Color.RED);
+                score.setTextFill(Color.RED);
+                comment.setTextFill(Color.RED);
+                deleteButton.setDisable(true);
+                evaluation.getEvaluationItems().remove(ei);
+                
             });
             
             
@@ -1004,22 +977,22 @@ public class EmployeeEvaluator extends Application {
     
     public void refreshEmployeeTable(){
         allEmployeesScreen.setItems(FXCollections.observableArrayList(er.getAllEmployees()));
-        TableColumn<Employee,String> firstNameCol = new TableColumn<Employee,String>("First Name");
+        TableColumn<Employee,String> firstNameCol = new TableColumn<Employee,String>("Krstné meno");
         firstNameCol.setCellValueFactory(new PropertyValueFactory("firstName"));
-        TableColumn<Employee,String> lastNameCol = new TableColumn<Employee,String>("Last Name");
+        TableColumn<Employee,String> lastNameCol = new TableColumn<Employee,String>("Priezvisko");
         lastNameCol.setCellValueFactory(new PropertyValueFactory("lastName"));
-        TableColumn<Employee,String> birthNumberCol = new TableColumn<Employee,String>("Birth Number");
+        TableColumn<Employee,String> birthNumberCol = new TableColumn<Employee,String>("Rodné číslo");
         birthNumberCol.setCellValueFactory(new PropertyValueFactory("birthNumber"));
-        TableColumn<Employee,String> roleCol = new TableColumn<Employee,String>("Role");
+        TableColumn<Employee,String> roleCol = new TableColumn<Employee,String>("Úloha");
         roleCol.setCellValueFactory(new PropertyValueFactory("role"));
         allEmployeesScreen.getColumns().setAll(firstNameCol, lastNameCol, birthNumberCol, roleCol);
     }
     
     public void refreshCategoryTable(){
         allCategoriesScreen.setItems(FXCollections.observableArrayList(cr.getAllCategories()));
-        TableColumn<Category,String> descriptionCol = new TableColumn<Category,String>("Description");
+        TableColumn<Category,String> descriptionCol = new TableColumn<Category,String>("Popis");
         descriptionCol.setCellValueFactory(new PropertyValueFactory("description"));
-        TableColumn<Category,String> coefficientCol = new TableColumn<Category,String>("Coefficient");
+        TableColumn<Category,String> coefficientCol = new TableColumn<Category,String>("Koeficient");
         coefficientCol.setCellValueFactory(new PropertyValueFactory("coefficient"));        
         allCategoriesScreen.getColumns().setAll(descriptionCol, coefficientCol);
     }
@@ -1027,11 +1000,11 @@ public class EmployeeEvaluator extends Application {
     public TableView<Evaluation> refreshEvaluationTable(Employee employee){
         TableView<Evaluation> evaluationTable = new TableView<Evaluation>();
             evaluationTable.setItems(FXCollections.observableArrayList(employee.getEvaluations()));
-            TableColumn<Evaluation,String> evaluationDateCol = new TableColumn<Evaluation,String>("Evaluation date");
+            TableColumn<Evaluation,String> evaluationDateCol = new TableColumn<Evaluation,String>("Dátum pohovoru");
             evaluationDateCol.setCellValueFactory(new PropertyValueFactory("evaluationDate"));
-            TableColumn<Evaluation,String> plannedDateCol = new TableColumn<Evaluation,String>("Planned Date");
+            TableColumn<Evaluation,String> plannedDateCol = new TableColumn<Evaluation,String>("Plánovaný pohovor");
             plannedDateCol.setCellValueFactory(new PropertyValueFactory("plannedDate"));
-            TableColumn<Evaluation,String> stornoReasonCol = new TableColumn<Evaluation,String>("Storno Reason");
+            TableColumn<Evaluation,String> stornoReasonCol = new TableColumn<Evaluation,String>("Dôvod storna");
             stornoReasonCol.setCellValueFactory(new PropertyValueFactory("stornoReason"));
             evaluationTable.setRowFactory( tv -> {
             TableRow<Evaluation> row = new TableRow<>();

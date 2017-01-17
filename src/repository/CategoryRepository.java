@@ -202,4 +202,11 @@ public class CategoryRepository {
     private boolean validateCategory(Category category) {
         return (category.getDescription() != null);
     }
+    
+    /**
+     * Metóda na vrátenie transakcie pri odchytávaní výnimky.
+     */
+    public void rollBack(){
+        session.getTransaction().rollback();
+    }
 }

@@ -210,4 +210,11 @@ public class EmployeeRepository {
                 && employee.getIdEmployee() > 0 
                 && employee.getRole() != null);
     }
+    
+    /**
+     * Metóda na vrátenie transakcie pri odchytávaní výnimky.
+     */
+    public void rollBack(){
+        session.getTransaction().rollback();
+    }
 }

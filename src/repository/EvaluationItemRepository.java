@@ -202,4 +202,11 @@ public class EvaluationItemRepository {
     private boolean validateEvaluationItem(EvaluationItem evaluationItem) {
         return (evaluationItem.getCategory() != null);
     }
+    
+    /**
+     * Metóda na vrátenie transakcie pri odchytávaní výnimky.
+     */
+    public void rollBack(){
+        session.getTransaction().rollback();
+    }
 }

@@ -202,4 +202,11 @@ public class EvaluationRepository {
     private boolean validateEvaluation(Evaluation evaluation) {
         return (evaluation.getPlannedDate() != null);
     }
+    
+    /**
+     * Metóda na vrátenie transakcie pri odchytávaní výnimky.
+     */
+    public void rollBack(){
+        session.getTransaction().rollback();
+    }
 }
