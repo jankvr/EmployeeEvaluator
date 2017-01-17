@@ -41,12 +41,14 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
+import javafx.stage.Popup;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import model.Category;
 import model.Employee;
 import model.Evaluation;
 import model.EvaluationItem;
+import org.hibernate.exception.ConstraintViolationException;
 import repository.CategoryRepository;
 import repository.EmployeeRepository;
 import repository.EvaluationItemRepository;
@@ -287,10 +289,25 @@ public class EmployeeEvaluator extends Application {
                 Button deleteEmployeeBtn = new Button();
                 deleteEmployeeBtn.setText("Vymazať zamestnanca");
                 deleteEmployeeBtn.setOnAction((ActionEvent event) -> {
-                    System.out.println("vymazaťzame");
-                    er.delete(employee.getIdEmployee());
-                    refreshEmployeeTable();
-                    root.setCenter(allEmployeesScreen);
+                    try{
+                        System.out.println("vymazaťzame");
+                        er.delete(employee.getIdEmployee());
+                        refreshEmployeeTable();
+                        root.setCenter(allEmployeesScreen);
+                    } catch(ConstraintViolationException e){
+                        Stage stage = new Stage();
+                        GridPane grid = new GridPane();
+                        grid.setAlignment(Pos.CENTER);
+                        grid.setHgap(10);
+                        grid.setVgap(10);
+                        grid.setPadding(new Insets(25, 25, 25, 25));
+                        grid.add(new Text("Zamestnanec má naplánované pohovory."),0,1);
+                        grid.add(new Text("Ak ho chcete zmazať, musíte zmazať jeho pohovory."),0,2);
+                         
+                        Scene gridScene = new Scene(grid, 300, 275);
+                        stage.setScene(gridScene);
+                        stage.show();
+                    }
                 });
                 deleteEmployeeBtn.setPrefWidth(200);  
                 
@@ -334,14 +351,55 @@ public class EmployeeEvaluator extends Application {
                 });
                 editEvaluationBtn.setPrefWidth(200);
 
+                Button stornoEvaluationBtn = new Button();
+                stornoEvaluationBtn.setText("Stornovať pohovor");
+                stornoEvaluationBtn.setOnAction((ActionEvent event) -> {
+                    try{
+                        System.out.println("vymazaťpohovor");
+                        
+                        
+                        refreshEmployeeTable();
+                        root.setCenter(stornoEvaluation(evaluation,employee));
+                    } catch(ConstraintViolationException e){
+                        Stage stage = new Stage();
+                        GridPane grid = new GridPane();
+                        grid.setAlignment(Pos.CENTER);
+                        grid.setHgap(10);
+                        grid.setVgap(10);
+                        grid.setPadding(new Insets(25, 25, 25, 25));
+                        grid.add(new Text("K pohovoru sa vzťahujú zodpovedané otázky."),0,1);
+                        grid.add(new Text("Ak ho chcete zmazať, musíte zmazať jeho otázky."),0,2);
+                         
+                        Scene gridScene = new Scene(grid, 300, 275);
+                        stage.setScene(gridScene);
+                        stage.show();
+                    }
+                });
+                stornoEvaluationBtn.setPrefWidth(200);  
+                
                 Button deleteEvaluationBtn = new Button();
                 deleteEvaluationBtn.setText("Vymazať pohovor");
                 deleteEvaluationBtn.setOnAction((ActionEvent event) -> {
-                    System.out.println("vymazaťpohovor");
-                    evalr.delete(evaluation.getIdEvaluation());
-                    evaluation.getEmployee().getEvaluations().remove(evaluation);//questionable
-                    refreshEmployeeTable();
-                    root.setCenter(allEmployeesScreen);
+                    try{
+                        System.out.println("vymazaťpoh");
+                        evalr.delete(evaluation.getIdEvaluation());
+                        employee.getEvaluations().remove(evaluation);
+                        refreshEvaluationTable(employee);
+                        root.setCenter(employeeDetail(employee));
+                    } catch(ConstraintViolationException e){
+                        Stage stage = new Stage();
+                        GridPane grid = new GridPane();
+                        grid.setAlignment(Pos.CENTER);
+                        grid.setHgap(10);
+                        grid.setVgap(10);
+                        grid.setPadding(new Insets(25, 25, 25, 25));
+                        grid.add(new Text("K pohovoru sa vzťahujú zodpovedané otázky"),0,1);
+                        grid.add(new Text("Ak ho chcete zmazať, musíte zmazať jeho otázky."),0,2);
+                         
+                        Scene gridScene = new Scene(grid, 300, 275);
+                        stage.setScene(gridScene);
+                        stage.show();
+                    }
                 });
                 deleteEvaluationBtn.setPrefWidth(200);  
                 
@@ -354,6 +412,7 @@ public class EmployeeEvaluator extends Application {
                 });
                 editItemsBtn.setPrefWidth(200);  
             detailScreenButtons.getChildren().add(editEvaluationBtn);
+            detailScreenButtons.getChildren().add(stornoEvaluationBtn);
             detailScreenButtons.getChildren().add(deleteEvaluationBtn);
             detailScreenButtons.getChildren().add(editItemsBtn);
         
@@ -419,8 +478,10 @@ public class EmployeeEvaluator extends Application {
                     final Employee newEmployee = new Employee(employee.getIdEmployee(),firstNameField.getText(),
                             lastNameField.getText(),birthNumberField.getText(),
                             roleField.getText());
-                    er.edit(newEmployee); //hádže NonUniqueObjectException
+                    newEmployee.setEvaluations(employee.getEvaluations());
+                    er.edit(newEmployee); 
                     refreshEmployeeTable();
+                    refreshEvaluationTable(newEmployee);
                     root.setCenter(allEmployeesScreen);
                 });
         editEmployeeScreen.add(editEmployeeBtn,1,5);
@@ -496,10 +557,25 @@ public class EmployeeEvaluator extends Application {
                 Button deleteCategoryBtn = new Button();
                 deleteCategoryBtn.setText("Vymazať otázku");
                 deleteCategoryBtn.setOnAction((ActionEvent event) -> {
-                    System.out.println("vymazaťCategory");
-                    cr.delete(category.getIdCategory());
-                    refreshCategoryTable();
-                    root.setCenter(allCategoriesScreen);
+                    try{
+                        System.out.println("vymazaťCategory");
+                        cr.delete(category.getIdCategory());
+                        refreshCategoryTable();
+                        root.setCenter(allCategoriesScreen);
+                    } catch(ConstraintViolationException e){
+                        Stage stage = new Stage();
+                        GridPane grid = new GridPane();
+                        grid.setAlignment(Pos.CENTER);
+                        grid.setHgap(10);
+                        grid.setVgap(10);
+                        grid.setPadding(new Insets(25, 25, 25, 25));
+                        grid.add(new Text("Otázka sa používa v pohovoroch."),0,1);
+                        grid.add(new Text("Ak ju chcete zmazať, musíte zmazať pohovory, kde sa vyskytuje."),0,2);
+                         
+                        Scene gridScene = new Scene(grid, 300, 275);
+                        stage.setScene(gridScene);
+                        stage.show();
+                    }
                 });
                 deleteCategoryBtn.setPrefWidth(200);  
             detailScreenButtons.getChildren().add(editCategoryBtn);
@@ -658,20 +734,42 @@ public class EmployeeEvaluator extends Application {
         editEvaluationScreen.setHgap(10);
         editEvaluationScreen.setVgap(10);
         editEvaluationScreen.setPadding(new Insets(25, 25, 25, 25));
-
+        
         
         Text scenetitle2 = new Text("New Evaluation Screen");
         scenetitle2.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
         editEvaluationScreen.add(scenetitle2, 0, 0, 2, 1);
         Label plannedDate = new Label("Planned Date:");
         editEvaluationScreen.add(plannedDate, 0, 1);
-
+        
         DatePicker plannedDateField = new DatePicker();
         Date previousDate = evaluation.getPlannedDate();
         LocalDate previousLocalDate = new java.sql.Date(previousDate.getTime()).toLocalDate();
         plannedDateField.setValue(previousLocalDate);
         editEvaluationScreen.add(plannedDateField, 1, 1);
+        
+        Label evaluationDate = new Label("Evaluation Date:");
+        editEvaluationScreen.add(evaluationDate, 0, 2);
 
+        DatePicker evaluationDateField = new DatePicker();
+        if(evaluation.getEvaluationDate()==null){evaluationDateField.setDisable(true);}
+        else{
+            Date previousEDate = evaluation.getEvaluationDate();
+            LocalDate previousLocalEDate = new java.sql.Date(previousEDate.getTime()).toLocalDate();
+            evaluationDateField.setValue(previousLocalEDate);
+        }
+        editEvaluationScreen.add(evaluationDateField, 1, 2);
+        
+        
+        Label stornoReason = new Label("Dôvod storna:");
+        editEvaluationScreen.add(stornoReason, 0, 3);
+
+        TextField stornoReasonField = new TextField();
+        if(evaluation.getStornoReason()==null){stornoReasonField.setDisable(true);}
+        else{
+            stornoReasonField.setText(evaluation.getStornoReason());
+        }
+        editEvaluationScreen.add(stornoReasonField, 1, 3);
         
         
                
@@ -685,16 +783,71 @@ public class EmployeeEvaluator extends Application {
                     Instant instant = Instant.from(localDate.atStartOfDay(ZoneId.systemDefault()));
                     Date date = Date.from(instant);
                     final Evaluation newEvaluation = new Evaluation(evaluation.getIdEvaluation(),employee,date);
+                    
+                    if(evaluation.getStornoReason()!=null){
+                        LocalDate localDate2 = evaluationDateField.getValue();
+                        Instant instant2 = Instant.from(localDate2.atStartOfDay(ZoneId.systemDefault()));
+                        Date date2 = Date.from(instant2);
+                        newEvaluation.setEvaluationDate(date2);
+                        newEvaluation.setStornoReason(stornoReasonField.getText());
+                        newEvaluation.setEvaluationItems(evaluation.getEvaluationItems());
+                    }
                     evalr.edit(newEvaluation); 
                     employee.getEvaluations().remove(evaluation);//questionable
                     employee.getEvaluations().add(newEvaluation);//questionable
                     refreshEvaluationTable(employee);
                     root.setCenter(employeeDetail(employee));
                 });
-        editEvaluationScreen.add(newEvaluationBtn,1,3);
+        editEvaluationScreen.add(newEvaluationBtn,1,4);
         
         return editEvaluationScreen;        
        
+    }
+    
+    private Pane stornoEvaluation(Evaluation evaluation, Employee employee){
+        GridPane stornoEvaluation = new GridPane();
+        stornoEvaluation.setAlignment(Pos.CENTER);
+        stornoEvaluation.setHgap(10);
+        stornoEvaluation.setVgap(10);
+        stornoEvaluation.setPadding(new Insets(25, 25, 25, 25));
+
+        
+        Text scenetitle2 = new Text("New Evaluation Screen");
+        scenetitle2.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
+        stornoEvaluation.add(scenetitle2, 0, 0, 2, 1);
+        Label plannedDate = new Label("Evaluation Date:");
+        stornoEvaluation.add(plannedDate, 0, 1);
+
+        DatePicker evaluationDateField = new DatePicker();
+        stornoEvaluation.add(evaluationDateField, 1, 1);
+
+        
+        Label stornoReason = new Label("Dôvod storna:");
+        stornoEvaluation.add(stornoReason, 0, 2);
+
+        TextField stornoReasonField = new TextField();
+        stornoEvaluation.add(stornoReasonField, 1, 2);
+        
+               
+        
+        //int formerId = employee.getIdEmployee();
+        
+        Button newEvaluationBtn = new Button("Uložiť stornovaný pohovor");
+        newEvaluationBtn.setOnAction((ActionEvent event) -> {
+                    System.out.println("uložiťotázkuz");
+                    LocalDate localDate = evaluationDateField.getValue();
+                    Instant instant = Instant.from(localDate.atStartOfDay(ZoneId.systemDefault()));
+                    Date date = Date.from(instant);
+                    final Evaluation newEvaluation = new Evaluation(evaluation.getIdEvaluation(),employee,date,evaluation.getPlannedDate(),stornoReasonField.getText(),evaluation.getEvaluationItems());
+                    evalr.edit(newEvaluation); 
+                    employee.getEvaluations().remove(evaluation);//questionable
+                    employee.getEvaluations().add(newEvaluation);//questionable
+                    refreshEvaluationTable(employee);
+                    root.setCenter(employeeDetail(employee));
+                });
+        stornoEvaluation.add(newEvaluationBtn,1,3);
+        
+        return stornoEvaluation; 
     }
     
     
@@ -741,7 +894,7 @@ public class EmployeeEvaluator extends Application {
             commentField.setText(ei.getCommentary());
             int nullIndex = previouslyUnansweredCategoriesList.size();
             previouslyUnansweredCategoriesList.add(null);
-            
+     
             
             editEvaluationItemsScreen.add(scoreBox,2,i);
             editEvaluationItemsScreen.add(commentField,3,i);
