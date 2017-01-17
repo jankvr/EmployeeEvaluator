@@ -364,29 +364,7 @@ public class EmployeeEvaluator extends Application {
             
 
             
-            TableView<Category> evaluationItemTable = new TableView<Category>();
-            evaluationItemTable.setItems(FXCollections.observableArrayList(evaluation.getEvaluationItems()));
-//            TableColumn<EvaluationItem,String> evaluationDateCol = new TableColumn<EvaluationItem,String>("Evaluation date");
-//            evaluationDateCol.setCellValueFactory(new PropertyValueFactory("evaluationDate"));
-//            TableColumn<EvaluationItem,String> plannedDateCol = new TableColumn<EvaluationItem,String>("Planned Date");
-//            plannedDateCol.setCellValueFactory(new PropertyValueFactory("plannedDate"));
-            TableColumn<EvaluationItem,String> score = new TableColumn<EvaluationItem,String>("score");
-            score.setCellValueFactory(new PropertyValueFactory("score"));
-            TableColumn<EvaluationItem,String> commentary = new TableColumn<EvaluationItem,String>("Storno Reason");
-            commentary.setCellValueFactory(new PropertyValueFactory("commentary"));
-            //nebude klikateľné, budú sa editovať v samotstatnom okne s buttnom
-//            evaluationTable.setRowFactory( tv -> {
-//            TableRow<Evaluation> row = new TableRow<>();
-//            row.setOnMouseClicked(event -> {
-//                if (event.getClickCount() == 1 && (! row.isEmpty()) ) {
-//                    //zmeniť screen na detail zamestnanca
-//                    Evaluation rowData = row.getItem();
-//                    System.out.println("zoberazujem detail zamestnanca"+rowData);
-//                    root.setCenter(evalautionItemDetail(rowData));
-//                }
-//            });
-//            return row ;
-//            });
+            Pane evaluationItemTable = evaluationItemTable(evaluation);
             
         detailScreen.getChildren().add(detailScreenButtons);
         detailScreen.getChildren().add(detailScreenData);
@@ -719,6 +697,8 @@ public class EmployeeEvaluator extends Application {
        
     }
     
+    
+    
     private Pane editEvaluationItems(Evaluation evaluation){
         editEvaluationItemsScreen = new GridPane();
         editEvaluationItemsScreen.setAlignment(Pos.CENTER);
@@ -732,17 +712,13 @@ public class EmployeeEvaluator extends Application {
         
         List<Category> categoryList = cr.getAllCategories();
         int i=1;
-//        
+
 
         List<EvaluationItem> editedEvaluationItemList = new ArrayList<EvaluationItem>();
         List<ComboBox> editedComboBoxesList = new ArrayList<ComboBox>();
         List<TextField> editedTextFieldsList = new ArrayList<TextField>();
         List<Category> previouslyUnansweredCategoriesList = new ArrayList<Category>();
         
-//        editedComboBoxesList.add(0, null);
-//        editedEvaluationItemList.add(0, null);
-//        editedTextFieldsList.add(0, null);
-//        previouslyUnansweredCategoriesList.add(0, null);
         
         Set<Category> answeredCategories = new HashSet<Category>(); 
         Set<EvaluationItem> evaluationItemList = evaluation.getEvaluationItems();   
@@ -763,26 +739,19 @@ public class EmployeeEvaluator extends Application {
             TextField commentField = new TextField();
             editedTextFieldsList.add(commentField);
             commentField.setText(ei.getCommentary());
+            int nullIndex = previouslyUnansweredCategoriesList.size();
             previouslyUnansweredCategoriesList.add(null);
-//            EvaluationItem eiWithScore = new EvaluationItem(0, c,evaluation, 0);
             
             
             editEvaluationItemsScreen.add(scoreBox,2,i);
             editEvaluationItemsScreen.add(commentField,3,i);
+            
             i++;
         }
-//        editedComboBoxesList.add(null);
-//        editedEvaluationItemList.add(null);
-//        editedTextFieldsList.add(null);
-//        previouslyUnansweredCategoriesList.add(null);
         Text scenetitle3 = new Text("Nezodpovedané otázky:");
         scenetitle3.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
         editEvaluationItemsScreen.add(scenetitle3, 0, i, 2, 1);
         i++;
-//        editedComboBoxesList.add(null);
-//        editedEvaluationItemList.add(null);
-//        editedTextFieldsList.add(null);
-//        previouslyUnansweredCategoriesList.add(null);
         for(Category c : categoryList){
             if(/*!answeredCategories.contains(c)*/!checkCategoryInList(answeredCategories, c)){    
                 previouslyUnansweredCategoriesList.add(c);
@@ -834,6 +803,50 @@ public class EmployeeEvaluator extends Application {
                 });
         editEvaluationItemsScreen.add(saveEvaluationItemsBtn,1,i);
         return editEvaluationItemsScreen;
+    }
+    
+    private Pane evaluationItemTable(Evaluation evaluation){
+        GridPane evaluationItemTable = new GridPane();
+        evaluationItemTable.setAlignment(Pos.CENTER);
+        evaluationItemTable.setHgap(10);
+        evaluationItemTable.setVgap(10);
+        evaluationItemTable.setPadding(new Insets(25, 25, 25, 25));
+
+        Text scenetitle2 = new Text("Zodpovedané otázky:");
+        scenetitle2.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
+        evaluationItemTable.add(scenetitle2, 0, 0, 2, 1);
+        
+        List<Category> categoryList = cr.getAllCategories();
+        int i=1;
+
+
+        
+        
+        Set<EvaluationItem> evaluationItemList = evaluation.getEvaluationItems();   
+        for(EvaluationItem ei:evaluationItemList){
+             Label categoryDescription = new Label(ei.getCategory().getDescription());
+            evaluationItemTable.add(categoryDescription,0,i);
+            Label categoryCoefficient = new Label(Integer.toString(ei.getCategory().getCoefficient()));
+            evaluationItemTable.add(categoryCoefficient,1,i);
+            
+            Label score = new Label(Integer.toString(ei.getScore()));
+            Label comment = new Label(ei.getCommentary());
+            Button deleteButton = new Button("Vymazať");
+            deleteButton.setOnAction((ActionEvent event) -> {
+                System.out.println("vymazať evaluationitem");
+                eir.delete(ei.getIdEvaluationItem());
+            });
+            
+            
+            evaluationItemTable.add(score,2,i);
+            evaluationItemTable.add(comment,3,i);
+            evaluationItemTable.add(deleteButton,4,i);
+            i++;
+        }
+        
+        
+        
+        return evaluationItemTable;
     }
     
     public void refreshEmployeeTable(){
